@@ -926,7 +926,7 @@ let GS={money:0,owned:['cam'],skin:'cam',pet:'no_pet',spdLvl:0,lckLvl:0,radLvl:0
   items:{},quests:{},plantedFlowers:[],fishedCount:0,
   easterCoins:0,titles:[],equippedTitle:'',trollCount:0,
   mathScore:0,easterDate:'',nameColorId:0,
-  backpack:[],friends:[],eyeColor:'#3a8ee0',diamonds:0,giftsClaimed:{},giftsDate:'',
+  backpack:[],friends:[],eyeColor:'#3a8ee0',equippedHat:null,diamonds:0,giftsClaimed:{},giftsDate:'',
   hunger:100,sleepy:100};
 let musicOn=true,petalsOn=true,miniOn=true,chatOn=true;
 let houseGifted={},pendingHouseBlessing=null,pendingLixiDenom=0;
@@ -1567,6 +1567,17 @@ function drawWaterBullets(ctx,cam){
   ctx.globalAlpha=1;ctx.restore();
 
   // Water hit effect on self
+  // Bomb hit flash
+  if(window._bombFlash&&window._bombFlash.t>0){
+    window._bombFlash.t-=0.016;
+    ctx.save();
+    ctx.globalAlpha=window._bombFlash.t*.4;
+    ctx.fillStyle='rgba(255,100,0,1)';ctx.fillRect(0,0,vw,vh);
+    ctx.globalAlpha=Math.min(1,window._bombFlash.t*1.5);
+    ctx.font='bold 40px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('💣',vw/2,vh/2);
+    ctx.restore();
+  }
   if(_waterHitEffect&&_waterHitEffect.t>0){
     _waterHitEffect.t-=0.016;
     const _wha=Math.min(1,_waterHitEffect.t*.8);
@@ -3116,7 +3127,9 @@ function drawOtherCat(ctx,sx,sy,now,op){
   ctx.beginPath();ctx.ellipse(sx,sy+2,14,5,0,0,Math.PI*2);ctx.fill();
   // Pass emo accounting for emoT (time remaining)
   const _opEmo=(op.emoT>0)?op.emo:'idle';
+  const _prevHat=GS.equippedHat;GS.equippedHat=op.hat||null;
   drawCat(ctx,sx,sy+_jOff,now,false,_opEmo||'idle',op.wf||0,op.facing||1,op.state==='jump'?'idle':(op.state||'idle'),op.skin||'cam',0,op.eyeColor);
+  GS.equippedHat=_prevHat;
   // Nametag
   ctx.save();
   ctx.font='bold 10px Arial';
@@ -4302,7 +4315,7 @@ function broadcastPos(){
   const _hi=heldItem?heldItem.id:'';const _hiIcon=heldItem?(heldItem.icon||heldItem.id||''):'';const _jumping=typeof jumpActive!=='undefined'&&jumpActive?1:0;const _myMoney=GS.money||0;const _st=sittingOn?'sit':_jumping?'jump':cat.state||'idle';const _myTitle=GS.equippedTitle||'';const _myPet=GS.pet||'no_pet';
   // Sync weather every 30 broadcasts
   if(!window._weatherBcastC)window._weatherBcastC=0;window._weatherBcastC++;
-  if(window._weatherBcastC%30===0&&_weather){pnPublish({type:'weather_sync',w:_weather,t:_weatherTimer,mt:_meteorActive});};const _inHouse=insideHouse?insideHouse.id:'';const msg={type:'pos',inHouse:_inHouse,id:MY_ID,name:GS.playerName,x:cat.x,y:cat.y,skin:GS.skin,facing:cat.facing,emo:currEmo,emoT:emoTimer||0,wf:cat.wf||0,state:_st,held:_hi,heldIcon:_hiIcon,money:_myMoney,title:_myTitle,pet:_myPet,nameColorId:GS.nameColorId||0,vehicle:_vehicle?_vehicle.active:null,eyeColor:GS.eyeColor||'#3a8ee0',_intX:insideHouse?_intPlayer.x:undefined,_intY:insideHouse?_intPlayer.y:undefined,mid:MY_ID+'_p'+Math.floor(now2/110)};
+  if(window._weatherBcastC%30===0&&_weather){pnPublish({type:'weather_sync',w:_weather,t:_weatherTimer,mt:_meteorActive});};const _inHouse=insideHouse?insideHouse.id:'';const msg={type:'pos',inHouse:_inHouse,id:MY_ID,name:GS.playerName,x:cat.x,y:cat.y,skin:GS.skin,facing:cat.facing,emo:currEmo,emoT:emoTimer||0,wf:cat.wf||0,state:_st,held:_hi,heldIcon:_hiIcon,money:_myMoney,title:_myTitle,pet:_myPet,nameColorId:GS.nameColorId||0,vehicle:_vehicle?_vehicle.active:null,eyeColor:GS.eyeColor||'#3a8ee0',_intX:insideHouse?_intPlayer.x:undefined,_intY:insideHouse?_intPlayer.y:undefined,mid:MY_ID+'_p'+Math.floor(now2/110),hat:GS.equippedHat,vnTokens:GS.vnTokens||0};
   pnPublish(msg);if(onlineBC)onlineBC.postMessage(msg);
 }
 function handleNetMsg(d){
@@ -4330,7 +4343,7 @@ function handleNetMsg(d){
       op.ts=Date.now();op.name=d.name||op.name;
       op.title=d.title||'';op.pet=d.pet||'no_pet';
       op.nameColorId=d.nameColorId||0;op.money=d.money||0;
-      op.vehicle=d.vehicle||null;op.eyeColor=d.eyeColor||null;
+      op.vehicle=d.vehicle||null;op.eyeColor=d.eyeColor||null;op.hat=d.hat||null;
       op.inHouse=d.inHouse||'';
       op._intX=d._intX;op._intY=d._intY;
       op.wf=d.wf||0;
@@ -4368,6 +4381,58 @@ function handleNetMsg(d){
   }
   else if(d.type==='bye'){const op=onlinePlayers.find(p=>p.id===d.id);if(op){addChat('Hệ thống',op.name+' đã rời',true);onlinePlayers=onlinePlayers.filter(p=>p.id!==d.id);document.getElementById('oltxt').textContent=1+onlinePlayers.length}}
   else if(d.type==='emo'){const op2=onlinePlayers.find(p=>p.id===d.id);if(op2){op2.emo=d.emo||'idle';op2.emoTimer=7;}}
+  // ── TROLL BOMB ──────────────────────────────────────────
+  else if(d.type==='troll'&&d.to===MY_ID){
+    const _ka=Math.random()*Math.PI*2;
+    cat.x=Math.max(52,Math.min(126*52,cat.x+Math.cos(_ka)*280));
+    cat.y=Math.max(52,Math.min(78*52,cat.y+Math.sin(_ka)*280));
+    window._bombFlash={t:3};
+    if(typeof currEmo!=='undefined'){currEmo='😵';emoTimer=3;}
+    toast('💣 '+(d.from||'?')+' troll bạn! Văng XA!');
+  }
+  else if(d.type==='troll_vis'){
+    if(!window._onlineBombs)window._onlineBombs=[];
+    window._onlineBombs.push({x:d.x||cat.x,y:d.y||cat.y,t:1.5});
+  }
+  // ── FLOWER STOLEN ───────────────────────────────────────
+  else if(d.type==='flower_stolen'){
+    if(d.owner===GS.playerName){
+      toast('🚨 '+(d.fromName||'?')+' vừa trộm hoa của bạn!',5000);
+      if(GS.plantedFlowers){
+        const _fi=GS.plantedFlowers.findIndex(p=>Math.abs(p.wx-(d.wx||0))<15&&Math.abs(p.wy-(d.wy||0))<15);
+        if(_fi>=0){GS.plantedFlowers.splice(_fi,1);save();}
+      }
+    }
+  }
+  // ── FRIEND REQUEST ──────────────────────────────────────
+  else if(d.type==='friend_req'&&d.to===MY_ID){
+    const _fn=d.name||'?',_fi=d.from;
+    const _fb=document.createElement('button');
+    _fb.style.cssText='position:fixed;bottom:220px;left:50%;transform:translateX(-50%);z-index:800;padding:10px 22px;background:linear-gradient(135deg,#115511,#22aa22);border:2px solid #FFD700;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5)';
+    _fb.textContent='💚 Kết bạn với '+_fn+' ?';
+    document.body.appendChild(_fb);
+    _fb.onclick=()=>{
+      if(!GS.friends)GS.friends=[];
+      if(!GS.friends.some(f=>f.id===_fi))GS.friends.push({id:_fi,name:_fn});
+      pnPublish({type:'friend_accept',from:MY_ID,name:GS.playerName,to:_fi});
+      save();toast('💚 Đã kết bạn với '+_fn+'!');_fb.remove();
+    };
+    setTimeout(()=>{try{_fb.remove();}catch(e){}},10000);
+    toast('💚 '+_fn+' muốn kết bạn!',4000);
+  }
+  else if(d.type==='friend_accept'&&d.to===MY_ID){
+    if(!GS.friends)GS.friends=[];
+    if(!GS.friends.some(f=>f.id===d.from))GS.friends.push({id:d.from,name:d.name||'?'});
+    save();toast('💚 '+(d.name||'?')+' chấp nhận kết bạn!');
+  }
+  // ── WEATHER SYNC ────────────────────────────────────────
+  else if(d.type==='weather_sync'){
+    if(typeof _weather!=='undefined')_weather=d.w||'sunny';
+    if(d.mt&&typeof _meteorActive!=='undefined')_meteorActive=true;
+  }
+  // ── PARKOUR ─────────────────────────────────────────────
+  else if(d.type==='pkr_pos'){if(typeof _pkr!=='undefined'&&_pkr.active&&_pkr.players)_pkr.players[d.from]=d;}
+  else if(d.type==='pkr_stage'){toast('🏆 '+(d.name||'?')+' đạt giai đoạn '+(d.stage+1)+'!');}
 }
 
 // ── MINI GAMES ────────────────────────────────────────────
@@ -5571,6 +5636,22 @@ function showMobileUI(inHouse,inShop){
     else if(mabX)mabX.innerHTML='✕<br><span style="font-size:8px">Bỏ</span>';
   }
 }
+function e_touchMabQ(ev){
+  ev.preventDefault();
+  if(_forcedSleep)return;
+  if(fishingActive){
+    window._mobilePulling=true;
+    setTimeout(()=>{window._mobilePulling=false;},300);
+    fishingProgress=Math.min(1,(fishingProgress||0)+.18);
+    return;
+  }
+  if(heldItem){useHeld();return;}
+  // Use first item in hotbar
+  for(let i=0;i<8;i++){
+    if(hotbar[i]){hotbarSelect(i);useHeld();return;}
+  }
+  toast('Chọn vật phẩm trong hotbar!');
+}
 function exitHouseMobile(){
   exitHouse();
   showMobileUI(false,false);
@@ -5877,6 +5958,15 @@ function renderHotbar(){
 const PET_ICONS={'no_pet':'','pet_vang':'🐢','pet_hong':'🦋','pet_xanh':'⭐','pet_do':'🦊','pet_tim':'🐰','pet_fee':'🔥',
   'ga_con':'🐣','tho_bong':'🐰','pet_rong':'🐲','pet_meo':'🐱'};
 
+function growPet(dt){
+  if(!GS.pet||GS.pet==='no_pet')return;
+  if(!GS.petAge)GS.petAge=0;
+  GS.petAge+=(dt/3600); // grows 1 age unit per hour of play
+  if(GS.petAge>=5&&!GS._petAdult){
+    GS._petAdult=true;save();
+    toast('🎉 Pet của bạn đã trưởng thành! Giờ có thể cưỡi! (E gần pet)');
+  }
+}
 function drawPet(ctx,sx,sy,now){
   const pid=GS.pet||'no_pet';
   if(pid==='no_pet')return;
@@ -5925,6 +6015,18 @@ const LIXI_TIERS=[
   {amt:400000, label:'400k', color:'#004499',prob:.07},
   {amt:450000, label:'450k', color:'#330099',prob:.015},
   {amt:500000, label:'500k', color:'#880055',prob:.01},
+];
+const EYE_COLORS=[
+  {id:'#3a8ee0',nm:'Xanh Dương',price:0},
+  {id:'#22cc44',nm:'Xanh Lá',price:5000},
+  {id:'#cc8822',nm:'Nâu Hổ',price:8000},
+  {id:'#9933cc',nm:'Tím',price:12000},
+  {id:'#ffaa00',nm:'Vàng Hổ',price:20000},
+  {id:'#00cccc',nm:'Xanh Ngọc',price:25000},
+  {id:'#ff6688',nm:'Hồng',price:30000},
+  {id:'#ffffff',nm:'Trắng Bạch',price:40000},
+  {id:'#ff0000',nm:'Đỏ Rực',price:80000},
+  {id:'rainbow',nm:'Cầu Vồng ✨',price:200000},
 ];
 function pickLixiTier(){
   const lk=Math.min(2.5,1+(GS.lckLvl||0)*.18);
@@ -6685,6 +6787,19 @@ function initGame(){
   updateMoneyUI();
 
   cv.addEventListener('click',e=>{
+    // Check click on online player first (any screen state)
+    if(!insideHouse||!insideHouse.shopItems){
+      const rect2=cv.getBoundingClientRect();
+      const _ecx=e.clientX-rect2.left,_ecy=e.clientY-rect2.top;
+      for(const op of onlinePlayers){
+        if(!op)continue;
+        const opsx=op.x-cam.x,opsy=op.y-cam.y;
+        if(Math.abs(_ecx-opsx)<28&&Math.abs(_ecy-opsy)<40){
+          showPlayerInteraction&&showPlayerInteraction(op,e.clientX,e.clientY);
+          return;
+        }
+      }
+    }
     if(insideHouse&&insideHouse.shopItems){
       const rect=cv.getBoundingClientRect();
       const cx=e.clientX-rect.left;
@@ -7570,7 +7685,16 @@ x:220;flex-direction:column;align-items:center;gap:7px;
     <div style="font-size:22px;font-weight:700;color:#FFD700;text-align:center;margin-bottom:12px">🎮 Mèo Hái Lì Xì 2.1 — CẬP NHẬT</div>
     <div style="font-size:12px;color:#aaa;text-align:center;margin-bottom:14px">Phiên bản mới nhất</div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
-      <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà/shop → teleport đến đảo (online)<br>• Lì xì: click 3-5 lần để mở, pháo hoa chỉ 500k, spawn trong rừng<br>• Thanh đói & buồn ngủ: ảnh hưởng gameplay<br>• Thời tiết: mưa/nắng/sao băng<br>• Quà theo giờ chơi (reset mỗi ngày)<br>• Hệ thống kim cương 💎<br>• Kết bạn & follow hệ thống</div>
+      <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà → teleport đến đảo (cat coords 9000+)
+• Troll bom: văng người khác online ✅
+• Mũ (Noel/Ảo Thuật/Nón Lá/Mầm) - mua ở tiệm skin
+• Kim cương 💎 + VN Token hệ thống
+• Pet có tuổi - 5 tuổi có thể cưỡi
+• Màu mắt 10 loại có giá tiền
+• Parkour game trên đảo riêng
+• Quà theo giờ 🎁 (1p/5p/10p/30p/1h)
+• Thời tiết mưa/nắng/sao băng online
+• Hoa đột biến (vàng/kim/ruby/rainbow/sao băng)<br>• Lì xì: click 3-5 lần để mở, pháo hoa chỉ 500k, spawn trong rừng<br>• Thanh đói & buồn ngủ: ảnh hưởng gameplay<br>• Thời tiết: mưa/nắng/sao băng<br>• Quà theo giờ chơi (reset mỗi ngày)<br>• Hệ thống kim cương 💎<br>• Kết bạn & follow hệ thống</div>
       <div style="background:rgba(100,200,100,.1);border-left:3px solid #44ff88;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#44ff88">🔧 FIX</strong><br>• Vào nhà thấy mèo đúng vị trí<br>• Mua đồ có nút MUA rõ ràng<br>• Pet/xuồng/cánh chỉ mua 1 lần<br>• Lì xì spawn trong rừng<br>• Camera theo mèo khi trên đảo</div>
       <div style="background:rgba(100,150,255,.1);border-left:3px solid #88aaff;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#88aaff">⚖️ THAY ĐỔI</strong><br>• Lì xì chủ yếu 10k-50k, 500k cực hiếm (0.1%)<br>• Thiếu ngủ hoàn toàn mới không di chuyển được<br>• Đói giảm tốc độ, không ảnh hưởng khác<br>• Kiếm tiền cần cày nhiều hơn</div>
     </div>
