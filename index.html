@@ -4846,6 +4846,7 @@ function gameLoop(now){
     }
     checkNearby();
     checkLixi();
+    typeof checkFlowerSteal==='function'&&checkFlowerSteal(cat.x,cat.y);
     checkWorldItemPickup();
     lixiCool=Math.max(0,lixiCool-dt);
     broadcastPos();
@@ -4947,7 +4948,7 @@ function gameLoop(now){
   objs.forEach(obj=>{
     if(obj.tp==='tree'){drawTree(ctx,obj.wx-cam.x,obj.wy-cam.y-TS,obj.ttype,wt,obj.lant)}
     else if(obj.tp==='house'){drawHouseOnMap(ctx,obj.h,wt)}
-    else if(obj.tp==='pflower'){drawPlantedFlower(ctx,obj.pf,wt)}
+    else if(obj.tp==='pflower'){if(typeof drawPlantedFlowerEnhanced==='function'){const _sx=obj.pf.wx-cam.x,_sy=obj.pf.wy-cam.y;drawPlantedFlowerEnhanced(ctx,obj.pf,_sx,_sy,wt);}else drawPlantedFlower(ctx,obj.pf,wt)}
     else if(obj.tp==='lixi'){drawLixi(ctx,obj.lx,wt)}
     else if(obj.tp==='npc'){drawNPCOnMap(ctx,obj.npc,obj.ns,wt)}
     else if(obj.tp==='op'){const _op=obj.op;if(_op.inHouse)return;drawOtherCat(ctx,(_op.lx!==undefined?_op.lx:_op.x)-cam.x,(_op.ly!==undefined?_op.ly:_op.y)-cam.y,wt,_op)}
@@ -7569,7 +7570,7 @@ x:220;flex-direction:column;align-items:center;gap:7px;
     <div style="font-size:22px;font-weight:700;color:#FFD700;text-align:center;margin-bottom:12px">🎮 Mèo Hái Lì Xì 2.1 — CẬP NHẬT</div>
     <div style="font-size:12px;color:#aaa;text-align:center;margin-bottom:14px">Phiên bản mới nhất</div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
-      <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà → teleport đến đảo riêng, online thấy nhau<br>• Lì xì mới: click để mở, pháo hoa 500k<br>• Thanh đói & buồn ngủ: ảnh hưởng gameplay<br>• Thời tiết: mưa/nắng/sao băng<br>• Quà theo giờ chơi (reset mỗi ngày)<br>• Hệ thống kim cương 💎<br>• Kết bạn & follow hệ thống</div>
+      <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà/shop → teleport đến đảo (online)<br>• Lì xì: click 3-5 lần để mở, pháo hoa chỉ 500k, spawn trong rừng<br>• Thanh đói & buồn ngủ: ảnh hưởng gameplay<br>• Thời tiết: mưa/nắng/sao băng<br>• Quà theo giờ chơi (reset mỗi ngày)<br>• Hệ thống kim cương 💎<br>• Kết bạn & follow hệ thống</div>
       <div style="background:rgba(100,200,100,.1);border-left:3px solid #44ff88;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#44ff88">🔧 FIX</strong><br>• Vào nhà thấy mèo đúng vị trí<br>• Mua đồ có nút MUA rõ ràng<br>• Pet/xuồng/cánh chỉ mua 1 lần<br>• Lì xì spawn trong rừng<br>• Camera theo mèo khi trên đảo</div>
       <div style="background:rgba(100,150,255,.1);border-left:3px solid #88aaff;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#88aaff">⚖️ THAY ĐỔI</strong><br>• Lì xì chủ yếu 10k-50k, 500k cực hiếm (0.1%)<br>• Thiếu ngủ hoàn toàn mới không di chuyển được<br>• Đói giảm tốc độ, không ảnh hưởng khác<br>• Kiếm tiền cần cày nhiều hơn</div>
     </div>
