@@ -358,7 +358,14 @@ canvas{display:block;image-rendering:pixelated}
 <!-- HUD -->
 <div id="hud">
   <div id="mbox">🧧<span id="mval">0d</span></div><div id="waterAmmoDisplay" style="display:none;font-size:10px;letter-spacing:-1px;align-items:center;background:rgba(0,50,100,.5);border:1px solid #44aaff;border-radius:10px;padding:2px 6px;color:#88ddff">💦💦💦💦💦💦💦💦💦💦</div><!-- Hunger/sleep bars -->
-<div id="kmhDisplay" style="position:fixed;bottom:130px;right:10px;z-index:60;display:none;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:3px 8px;font-size:11px;color:#fff;pointer-events:none">
+<div id="fuelBar" style="position:fixed;bottom:150px;right:10px;z-index:60;display:none;align-items:center;gap:4px;pointer-events:none">
+  <span style="font-size:11px">⛽</span>
+  <div style="width:60px;height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;border:1px solid rgba(100,200,255,.3)">
+    <div id="fuelFill" style="height:100%;width:100%;background:linear-gradient(90deg,#2255cc,#88aaff);border-radius:3px;transition:width .3s"></div>
+  </div>
+  <span id="fuelPct" style="font-size:9px;color:#88aaff">100%</span>
+</div>
+<div id="kmhDisplay"  style="position:fixed;bottom:130px;right:10px;z-index:60;display:none;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:3px 8px;font-size:11px;color:#fff;pointer-events:none">
   🚗 <span id="kmhVal">0</span> km/h
 </div>
 <div id="hungerBar"  style="position:fixed;top:36px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:60;align-items:center;pointer-events:none">
@@ -521,6 +528,21 @@ canvas{display:block;image-rendering:pixelated}
       style="background:rgba(0,100,200,.4);border:1px solid #4488cc;border-radius:8px;color:#88ccff;font-size:13px;padding:3px 10px;cursor:pointer">✕</button>
   </div>
   <div id="invGrid" style="overflow-y:auto;max-height:calc(72vh - 80px);display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
+</div>
+<!-- HAT & EYE SHOP OVERLAY -->
+<div id="hatEyeOv" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);align-items:center;justify-content:center">
+  <div style="background:linear-gradient(135deg,#1a0a1a,#0a051a);border:2px solid #FFD700;border-radius:20px;padding:16px;max-width:420px;width:94%;max-height:88vh;overflow-y:auto;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:18px;font-weight:700;color:#FFD700">🎩 Mũ & Màu Mắt</div>
+      <span onclick="document.getElementById('hatEyeOv').style.display='none'" style="cursor:pointer;color:#888;font-size:18px">✕</span>
+    </div>
+    <!-- HATS -->
+    <div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">🎩 Mũ</div>
+    <div id="hatGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px"></div>
+    <!-- EYE COLORS -->
+    <div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">👁️ Màu Mắt</div>
+    <div id="eyeGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+  </div>
 </div>
 <!-- SELL SHOP OVERLAY -->
 <div id="sellShopOv" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;
@@ -809,11 +831,7 @@ const HOUSES=[
   ]},
   {id:'petshop',nm:'Tiệm Pet',col:73,row:50,w:4,h:4,gift:0,hci:5,desc:'🐾 Mua pet trang trí',
     shopItems:[
-      {id:'mu_noel',  nm:'Mũ Noel',   icon:'🎅',price:15000,use:'hat'},
-    {id:'mu_magic', nm:'Mũ Ảo Thuật',icon:'🎩',price:25000,use:'hat'},
-    {id:'non_la',   nm:'Nón Lá',     icon:'🌾',price:12000,use:'hat'},
-    {id:'hat_sprout',nm:'Mũ Mầm',   icon:'🌱',price:18000,use:'hat'},
-    {id:'no_pet',  nm:'Tháo Pet',      icon:'❌',price:0,      use:'pet'},
+      {id:'no_pet',  nm:'Tháo Pet',      icon:'❌',price:0,      use:'pet'},
       {id:'pet_vang',nm:'Rùa Vàng',      icon:'🐢',price:50000, use:'pet',once:true},
       {id:'pet_hong',nm:'Bướm Hồng',     icon:'🦋',price:80000, use:'pet',once:true},
       {id:'pet_xanh',nm:'Sao Biển',      icon:'⭐',price:60000, use:'pet',once:true},
@@ -834,7 +852,7 @@ const HOUSES=[
   ]},
 
   // ═══ DINH ĐỘC LẬP + EVENT 30/4 ═══
-  {id:'gas_station',nm:'⛽ Trạm Xăng',col:68,row:38,w:5,h:4,hci:1,isGas:true},
+  {id:'gas_station',nm:'⛽ Trạm Xăng',col:75,row:35,w:6,h:5,hci:1,isGas:true},
   {id:'dinh_doc_lap',nm:'🏛️ Dinh Độc Lập',col:55,row:22,w:14,h:10,hci:0,isEvent:true,
    shopItems:[
     {id:'skin_vn',  nm:'Skin VN ⭐',  icon:'🇻🇳',price:30,  use:'hat',  desc:'30 VN Token',   vnCost:30,once:true},
@@ -2123,7 +2141,7 @@ function save(){
     plantedFlowers:GS.plantedFlowers,fishedCount:GS.fishedCount,
     easterCoins:GS.vnTokens||0,titles:GS.titles||[],equippedTitle:GS.equippedTitle||'',
     backpack:GS.backpack||[],friends:GS.friends||[],eyeColor:GS.eyeColor||'#3a8ee0',hunger:GS.hunger??100,sleepy:GS.sleepy??100,
-    trollCount:GS.trollCount||0,mathScore:GS.mathScore||0,equippedHat:GS.equippedHat||null,
+    trollCount:GS.trollCount||0,mathScore:GS.mathScore||0,equippedHat:GS.equippedHat||null,fuel:GS.fuel??100,
     easterDate:GS.easterDate||'',nameColorId:GS.nameColorId||0,
     _nameColorIdx:GS._nameColorIdx||0,_mood:GS._mood||'',
     hotbar:hotbar.map(s=>s?{id:s.id,icon:s.icon,name:s.name,count:s.count||1,extra:s.extra}:null),
@@ -2137,7 +2155,7 @@ function load(){
   GS.vnTokens=d.easterCoins||0;
   GS.titles=d.titles||[];GS.equippedTitle=d.equippedTitle||'';
   GS.trollCount=d.trollCount||0;GS.mathScore=d.mathScore||0;
-  GS.backpack=d.backpack||[];GS.friends=d.friends||[];GS.eyeColor=d.eyeColor||'#3a8ee0';GS.equippedHat=d.equippedHat||null;GS.equippedHat=d.equippedHat||null;
+  GS.backpack=d.backpack||[];GS.friends=d.friends||[];GS.eyeColor=d.eyeColor||'#3a8ee0';GS.equippedHat=d.equippedHat||null;GS.fuel=d.fuel??100;GS.equippedHat=d.equippedHat||null;
   GS.hunger=d.hunger??100;GS.sleepy=d.sleepy??100;
   GS.diamonds=d.diamonds||0;GS.follows=d.follows||[];
   GS.giftsClaimed=d.giftsClaimed||{};GS.giftsDate=d.giftsDate||'';
@@ -2777,6 +2795,16 @@ function useHeld(){
   if(heldItem.type==='rod'||heldItem.id==='can_cau'){
     if(fishingActive){stopFishing(fishingProgress>.7);}
     else{startFishing();}
+    return;
+  }
+  if(heldItem.type==='flag'||heldItem.id==='co_vn'){
+    // Wave flag animation + online
+    if(!window._flagWaving){
+      window._flagWaving=true;window._flagWaveTimer=4;
+      currEmo='🚩';emoTimer=4;
+      pnPublish&&pnPublish({type:'flag_wave',from:MY_ID,name:GS.playerName});
+      toast('🚩 Huơ cờ Việt Nam! 🇻🇳');
+    }
     return;
   }
   if(heldItem.type==='troll_bomb'){throwTrollBomb();return;}
@@ -3518,7 +3546,7 @@ ctx.fillStyle=shadeColor(tableColor,-20);ctx.fillRect(tx-3,ty+14,6,18);
     ctx.fillText(isCafe?'Dùng bữa không?':'Có gì cần mua?',nkx,nky-73);
     ctx.fillStyle='rgba(255,220,80,.9)';ctx.font='bold 10px Arial';ctx.textBaseline='alphabetic';
     ctx.fillText('↑ E: Mua hàng',nkx,nky-86);
-  } else if(_intNearNpc==='host'){_intNearNpc=null;}
+  } else if(_intNearNpc==='host'){showShopBuyPanel&&insideHouse&&insideHouse.shopItems?showShopBuyPanel(insideHouse):interactNearby&&interactNearby();}
 
   // ── PLAYER INSIDE ──────────────────────────────────────────────
   const _hpx=_intPlayer.x,_hpy=_intPlayer.y;
@@ -3803,7 +3831,13 @@ function drawHouseOnMap(ctx,h,now){
   if(h.isSkin)   {ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('🐱',cx,hy+hh*.05)}
   if(h.isFlower) {ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('🌸',cx,hy+hh*.05)}
   if(h.isFish)   {ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('🎣',cx,hy+hh*.05)}
-  if(h.isGas){const _cost=500;if(GS.money<_cost){toast('💰 Cần '+fmt(_cost)+'đ để đổ xăng!');return;}GS.money-=_cost;GS.fuel=Math.min(100,(GS.fuel||0)+20);updateMoneyUI();save();toast('⛽ Đổ xăng! +20 ('+Math.round(GS.fuel||0)+'%)');return;}
+  if(h.isGas){
+    const _gasCost=500;
+    if(GS.money<_gasCost){toast('💰 Cần '+fmt(_gasCost)+'đ để đổ xăng!');return;}
+    if((GS.fuel||0)>=100){toast('⛽ Xăng đầy rồi! (100%)');return;}
+    GS.money-=_gasCost;GS.fuel=Math.min(100,(GS.fuel||0)+25);
+    updateMoneyUI();save();
+    toast('⛽ Đổ xăng! Còn '+Math.round(GS.fuel||0)+'% ('+fmt(_gasCost)+'đ)');return;}
   if(h.isArcade) {ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('🎮',cx,hy+hh*.05)}
   if(h.isCafe)   {ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('☕',cx,hy+hh*.05)}
   if(h.isCho)    {ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('🛒',cx,hy+hh*.05)}
@@ -4887,6 +4921,13 @@ function interactNearby(){
     }
   }
   if(nearHouse&&!insideHouse){
+    if(nearHouse.isGas){
+      const _cost=500;
+      if(GS.money<_cost){toast('💰 Cần '+fmt(_cost)+'đ!');return;}
+      if((GS.fuel||0)>=100){toast('⛽ Xăng đầy rồi! (100%)');return;}
+      GS.money-=_cost;GS.fuel=Math.min(100,(GS.fuel||0)+25);
+      updateMoneyUI();save();toast('⛽ +25% xăng! Còn '+Math.round(GS.fuel||0)+'%');return;
+    }
     tryEnterHouse(nearHouse);
   }
 }
@@ -4976,7 +5017,18 @@ function gameLoop(now){
     updateWaterBullets(dt);
     updateNeeds(dt);
     updateWeather(dt);
-    {const _kmhEl=document.getElementById('kmhVal');const _kmhDisp=document.getElementById('kmhDisplay');if(_vehicle&&_vehicle.active&&_kmhEl&&_kmhDisp){const _kspd=_vehicle.active==='moto'?180:_vehicle.active==='car'?140:_vehicle.active==='wing'?250:_vehicle.active==='tank'?60:0;_kmhEl.textContent=_kspd;_kmhDisp.style.display=_kspd?'block':'none';}else if(_kmhDisp)_kmhDisp.style.display='none';}
+    {const _kmhEl=document.getElementById('kmhVal');const _kmhDisp=document.getElementById('kmhDisplay');
+    const _fuelBar=document.getElementById('fuelBar');const _fuelFill=document.getElementById('fuelFill');const _fuelPct=document.getElementById('fuelPct');
+    if(_vehicle&&_vehicle.active){
+      const _kspd=_vehicle.active==='moto'?180:_vehicle.active==='car'?140:_vehicle.active==='wing'?250:_vehicle.active==='tank'?60:0;
+      if(_kmhEl)_kmhEl.textContent=_kspd;if(_kmhDisp)_kmhDisp.style.display=_kspd?'block':'none';
+      if(_fuelBar)_fuelBar.style.display='flex';
+      if(_fuelFill)_fuelFill.style.width=Math.max(0,GS.fuel||0)+'%';
+      if(_fuelPct)_fuelPct.textContent=Math.round(GS.fuel||0)+'%';
+      // Drain fuel slowly
+      if(!window._fuelDrainT)window._fuelDrainT=0;window._fuelDrainT+=dt;
+      if(window._fuelDrainT>10){window._fuelDrainT=0;if(GS.fuel>0)GS.fuel=Math.max(0,(GS.fuel||0)-.5);}
+    }else{if(_kmhDisp)_kmhDisp.style.display='none';if(_fuelBar)_fuelBar.style.display='none';}}
     if(!window._giftCheckT)window._giftCheckT=0;window._giftCheckT+=dt;if(window._giftCheckT>30){window._giftCheckT=0;checkHourlyGifts();}
     // Boost timers decay
     if(GS._speedBoost>0)GS._speedBoost=Math.max(0,GS._speedBoost-dt);
@@ -5039,6 +5091,11 @@ function gameLoop(now){
     checkNearby();
     checkLixi();
     typeof checkFlowerSteal==='function'&&checkFlowerSteal(cat.x,cat.y);
+    // Gas station near check
+    if(nearHouse&&nearHouse.isGas&&!insideHouse){
+      const _hint=document.getElementById('hint');
+      if(_hint)_hint.innerHTML='⛽ [E] Đổ xăng - '+Math.round(GS.fuel||0)+'% (500đ)';
+    }
     checkWorldItemPickup();
     lixiCool=Math.max(0,lixiCool-dt);
     broadcastPos();
@@ -5222,19 +5279,30 @@ function gameLoop(now){
   // Held item indicator on cat
   if(!insideHouse&&heldItem){
     const sx=cat.x-cam.x,sy=cat.y-cam.y+jumpY;
-    if(window._flagWaving&&heldItem.id==='co_vn'){
-      // Flag wave animation
-      const _fw=Math.sin(now*.015)*25;const _fi=Math.floor(now*.01)%3;
-      ctx.save();ctx.translate(sx+14,sy-42);ctx.rotate(_fw*Math.PI/180);
-      // Flag pole
-      ctx.strokeStyle='#888';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-28);ctx.stroke();
-      // Flag
-      ctx.fillStyle='#cc0000';ctx.fillRect(0,-28,22,14);
-      ctx.fillStyle='#FFD700';ctx.font='10px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⭐',11,-21);
+    if(heldItem.id==='co_vn'||heldItem.type==='flag'){
+      // Canvas flag always visible on hand, waves when _flagWaving
+      const _fwave=window._flagWaving?Math.sin(now*.015)*22:3;
+      ctx.save();ctx.translate(sx+(cat.facing>0?14:-14),sy-40);if(cat.facing<0)ctx.scale(-1,1);
+      ctx.rotate(_fwave*Math.PI/180);
+      // Pole
+      ctx.strokeStyle='#888';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-30);ctx.stroke();
+      // Flag body (red)
+      ctx.fillStyle='#cc0000';ctx.fillRect(0,-30,24,16);
+      // Gold star in center
+      ctx.fillStyle='#FFD700';ctx.font='bold 12px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('⭐',12,-22);
+      // Border
+      ctx.strokeStyle='rgba(255,200,0,.5)';ctx.lineWidth=1;ctx.strokeRect(0,-30,24,16);
       ctx.restore();
     } else {
-      ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
-      ctx.fillText(heldItem.icon||'📦',sx,sy-38);
+      // Draw held item on hand position (right of cat)
+      const _hsx=sx+(cat.facing>0?14:-14);
+      ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.save();
+      // Small shadow under item
+      ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(_hsx,sy-30,8,3,0,0,Math.PI*2);ctx.fill();
+      ctx.fillText(heldItem.icon||'📦',_hsx,sy-42);
+      ctx.restore();
     }
   }
   // === Fishing line + bobber (Pony Town style) ===
@@ -6744,6 +6812,56 @@ window._buyEyeColor=function(id){
   GS.eyeColor=ec.id;save();toast('👁️ Đã đổi màu mắt: '+(ec.nm||ec.id)+'!');
   showEyeColorShop(); // refresh
 };
+function showHatEyeShop(){
+  const ov=document.getElementById('hatEyeOv');
+  if(!ov)return;
+  const hatGrid=document.getElementById('hatGrid');
+  const eyeGrid=document.getElementById('eyeGrid');
+  const HATS_LIST=[
+    {id:'mu_noel',nm:'Mũ Noel',icon:'🎅',price:15000},
+    {id:'mu_magic',nm:'Ảo Thuật',icon:'🎩',price:25000},
+    {id:'non_la',nm:'Nón Lá',icon:'🌾',price:12000},
+    {id:'hat_sprout',nm:'Mũ Mầm',icon:'🌱',price:18000},
+    {id:'mu_coi',nm:'Mũ Cối',icon:'⛑️',price:100000},
+    {id:'skin_vn',nm:'Mũ VN',icon:'🇻🇳',price:0,vnCost:30},
+  ];
+  hatGrid.innerHTML='';
+  HATS_LIST.forEach(hat=>{
+    const owned=GS.owned&&GS.owned.includes(hat.id);
+    const isEq=GS.equippedHat===hat.id;
+    const card=document.createElement('div');
+    card.style.cssText='padding:8px;background:rgba(255,255,255,'+(isEq?'.12':owned?'.08':'.05')+');border:1.5px solid '+(isEq?'#FFD700':owned?'#44ff88':'rgba(255,255,255,.2)')+';border-radius:10px;text-align:center;cursor:pointer';
+    const priceStr=hat.vnCost?hat.vnCost+' 🪙':fmt(hat.price)+'đ';
+    card.innerHTML='<div style="font-size:26px">'+hat.icon+'</div><div style="font-size:11px;font-weight:700;color:#FFD700;margin:2px 0">'+hat.nm+'</div>'+(isEq?'<div style="color:#44ff88;font-size:10px">✓ Đang đội</div>':owned?'<button style="width:100%;padding:3px;background:#226622;border:none;border-radius:5px;color:#fff;font-size:10px;cursor:pointer">Đội</button>':'<div style="font-size:10px;color:#aaa">'+priceStr+'</div><button style="width:100%;padding:3px;background:linear-gradient(135deg,#cc6600,#ff9900);border:none;border-radius:5px;color:#fff;font-size:10px;cursor:pointer">Mua</button>');
+    card.onclick=()=>{
+      if(owned||isEq){GS.equippedHat=isEq?null:hat.id;save();showHatEyeShop();toast(isEq?'Tháo mũ':'🎩 Đội: '+hat.nm);}
+      else{
+        if(hat.vnCost){if((GS.vnTokens||0)<hat.vnCost){toast('🪙 Cần '+hat.vnCost+' VN Token!');return;}GS.vnTokens-=hat.vnCost;}
+        else{if(GS.money<hat.price){toast('💰 Cần '+fmt(hat.price)+'đ!');return;}GS.money-=hat.price;updateMoneyUI();}
+        if(!GS.owned)GS.owned=[];GS.owned.push(hat.id);GS.equippedHat=hat.id;save();showHatEyeShop();toast('🎩 Mua: '+hat.nm+'!');
+      }
+    };
+    hatGrid.appendChild(card);
+  });
+  // Eye colors
+  if(typeof EYE_COLORS!=='undefined'){
+    eyeGrid.innerHTML='';
+    EYE_COLORS.forEach(ec=>{
+      const owned2=ec.price===0||(GS.ownedEyeColors&&GS.ownedEyeColors.includes(ec.id));
+      const isCur=GS.eyeColor===ec.id;
+      const card2=document.createElement('div');
+      card2.style.cssText='padding:6px;background:rgba(255,255,255,'+(isCur?'.12':'.05')+');border:1.5px solid '+(isCur?'#FFD700':'rgba(255,255,255,.15)')+';border-radius:8px;text-align:center;cursor:pointer';
+      const eyeStyle=ec.id==='rainbow'?'background:linear-gradient(135deg,#f00,#ff0,#0f0,#0ff,#00f)':'background:'+ec.id;
+      card2.innerHTML='<div style="width:20px;height:20px;border-radius:50%;'+eyeStyle+';margin:0 auto 2px;border:2px solid rgba(255,255,255,.3)"></div><div style="font-size:9px;color:'+(isCur?'#FFD700':owned2?'#44ff88':'#aaa')+'">'+(ec.nm||ec.id).slice(0,8)+'</div>'+(owned2?'':'<div style="font-size:8px;color:#888">'+fmt(ec.price)+'đ</div>');
+      card2.onclick=()=>{
+        if(owned2){GS.eyeColor=ec.id;save();showHatEyeShop();toast('👁️ Màu mắt!');}
+        else{if(GS.money<ec.price){toast('💰 Cần '+fmt(ec.price)+'đ!');return;}GS.money-=ec.price;updateMoneyUI();if(!GS.ownedEyeColors)GS.ownedEyeColors=[];GS.ownedEyeColors.push(ec.id);GS.eyeColor=ec.id;save();showHatEyeShop();toast('👁️ Đổi màu mắt!');}
+      };
+      eyeGrid.appendChild(card2);
+    });
+  }
+  ov.style.display='flex';
+}
 function showInventory(){
   const ov=document.getElementById('invOv');
   const grid=document.getElementById('invGrid');
@@ -6869,6 +6987,7 @@ function tryEnterHouse(h){
       _intPlayer={x:_vwSk*.2,y:_vhSk*.65,room:0};_intNearNpc=null;
     if(isMobile){const dp=document.getElementById('dp');if(dp)dp.style.display='flex';
       const ex=document.getElementById('mabExit');if(ex)ex.style.display='block';}});return;}
+  if(h.id==='dinh_doc_lap'){toast('🏛️ Dinh Độc Lập không mở cửa cho công chúng!');return;}
   if(h.isArcade){openParkour&&openParkour();return;}
   if(h.isChess){onEnterChessClub&&onEnterChessClub();return;}
   if(h.isEasterShop){showEasterShop&&showEasterShop();return;}
@@ -6907,6 +7026,33 @@ function doorFade(cb){
   requestAnimationFrame(()=>{ov.style.opacity='1';setTimeout(()=>{cb();ov.style.opacity='0';setTimeout(()=>{ov.remove();window._doorFading=false;},320);},300);});
 }
 
+function drawGasStation(ctx,sx,sy,h,now){
+  const W=h.w*52,H=h.h*52;
+  // Building background
+  ctx.fillStyle='#1a3a88';ctx.fillRect(sx,sy,W,H);
+  // Roof
+  ctx.fillStyle='#0d2266';ctx.fillRect(sx,sy,W,H*.2);
+  // Blue canopy
+  ctx.fillStyle='#2255cc';ctx.fillRect(sx-10,sy+H*.15,W+20,H*.15);
+  ctx.strokeStyle='#88aaff';ctx.lineWidth=2;ctx.strokeRect(sx-10,sy+H*.15,W+20,H*.15);
+  // Gas pumps (2x)
+  [[.25,.35],[.65,.35]].forEach(([rx,ry])=>{
+    const px=sx+W*rx,py=sy+H*ry;
+    ctx.fillStyle='#1155cc';ctx.fillRect(px-8,py,16,H*.4);
+    ctx.fillStyle='#88aaff';ctx.fillRect(px-6,py+H*.05,12,H*.12);
+    ctx.fillStyle='#FFD700';ctx.font='bold 8px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('⛽',px,py+H*.22);
+    // Nozzle
+    ctx.strokeStyle='#888';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px+8,py+H*.18);ctx.bezierCurveTo(px+22,py+H*.18,px+22,py+H*.32,px+16,py+H*.32);ctx.stroke();
+  });
+  // Sign
+  ctx.fillStyle='rgba(0,0,0,.7)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(sx+W*.15,sy+H*.88,W*.7,H*.1,4);else ctx.rect(sx+W*.15,sy+H*.88,W*.7,H*.1);ctx.fill();
+  ctx.fillStyle='#88ddff';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('⛽ TRẠM XĂNG',sx+W/2,sy+H*.93);
+  // Price
+  ctx.fillStyle='#88ff88';ctx.font='bold 8px Arial';ctx.textAlign='center';
+  ctx.fillText('500đ/lần',sx+W/2,sy+H*.82);
+}
 function drawDinhDocLap(ctx,sx,sy,h,now){
   const W=h.w*52,H=h.h*52;
   // Lawn (green)
@@ -7381,6 +7527,7 @@ function initGame(){
   document.getElementById('tpBtn')?.addEventListener('click',()=>{const m=document.getElementById('tpMenu');if(m)m.classList.toggle('on');});
   document.getElementById('mm')?.addEventListener('click',()=>{mmZoom=mmZoom===1?2:mmZoom===2?4:1;try{document.getElementById('mmzoom').textContent='🔍×'+mmZoom}catch(e){}; buildMinimap()});
   oc('eyeBtn',()=>showEyeColorShop&&showEyeColorShop());
+  oc('hatEyeBtn',()=>showHatEyeShop&&showHatEyeShop());
   oc('musicBtn',()=>{
     if(!audioCtx)initMusic();
     musicOn=!musicOn;
@@ -8235,7 +8382,18 @@ x:220;flex-direction:column;align-items:center;gap:7px;
     <div style="font-size:22px;font-weight:700;color:#FFD700;text-align:center;margin-bottom:12px">🎮 Mèo Hái Lì Xì 2.1 — CẬP NHẬT</div>
     <div style="font-size:12px;color:#aaa;text-align:center;margin-bottom:14px">Phiên bản mới nhất</div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
-      <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà → teleport đến đảo (cat coords 9000+)
+      <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà/shop → teleport đến đảo riêng
+• Trường học mới: 3 tầng + sân bóng + Cường/Mẫn/Trung ngồi ghế đá
+• Dinh Độc Lập: hàng rào sắt + Thầy Ba Mươi Tư NPC
+• Phương tiện: 🛵 Xe Máy, 🚗 Ô Tô, 🪖 Xe Tăng + km/h display
+• ⛽ Trạm Xăng: đổ xăng 500đ/lần
+• 🎩 Mũ trong tiệm skin (Noel/Ảo Thuật/Nón Lá/Mầm/Cối)
+• 👁️ Màu mắt trong tiệm skin
+• 🏪 Shop UI: bốc thăm skin/pet, đổi 💎, đổi tên 3💎
+• 💎 Kim cương: 300k = 1💎
+• 🌞 Quà ngày + quà theo giờ chơi
+• Cờ VN 🚩: huơ cờ animation online
+• Trả lời kết bạn online, huỷ kết bạn, follow
 • Troll bom: văng người khác online ✅
 • Mũ (Noel/Ảo Thuật/Nón Lá/Mầm) - mua ở tiệm skin
 • Kim cương 💎 + VN Token hệ thống
