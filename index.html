@@ -5094,7 +5094,7 @@ function gameLoop(now){
     // Gas station near check
     if(nearHouse&&nearHouse.isGas&&!insideHouse){
       const _hint=document.getElementById('hint');
-      if(_hint)_hint.innerHTML='⛽ [E] Đổ xăng - '+Math.round(GS.fuel||0)+'% (500đ)';
+      if(_hint)_hint.innerHTML='⛽ [O] Đổ xăng - '+Math.round(GS.fuel||0)+'% (500đ)';
     }
     checkWorldItemPickup();
     lixiCool=Math.max(0,lixiCool-dt);
@@ -5196,7 +5196,15 @@ function gameLoop(now){
   const JY=jumpY;
   objs.forEach(obj=>{
     if(obj.tp==='tree'){drawTree(ctx,obj.wx-cam.x,obj.wy-cam.y-TS,obj.ttype,wt,obj.lant)}
-    else if(obj.tp==='house'){drawHouseOnMap(ctx,obj.h,wt)}
+    else if(obj.tp==='house'){
+      if(obj.h.id==='gas_station'&&typeof drawGasStation==='function'){
+        drawGasStation(ctx,obj.h.col*52-cam.x,obj.h.row*52-cam.y,obj.h,wt);
+      } else if(obj.h.id==='dinh_doc_lap'&&typeof drawDinhDocLap==='function'){
+        drawDinhDocLap(ctx,obj.h.col*52-cam.x,obj.h.row*52-cam.y,obj.h,wt);
+      } else {
+        drawHouseOnMap(ctx,obj.h,wt);
+      }
+    }
     else if(obj.tp==='pflower'){if(typeof drawPlantedFlowerEnhanced==='function'){const _sx=obj.pf.wx-cam.x,_sy=obj.pf.wy-cam.y;drawPlantedFlowerEnhanced(ctx,obj.pf,_sx,_sy,wt);}else drawPlantedFlower(ctx,obj.pf,wt)}
     else if(obj.tp==='lixi'){drawLixi(ctx,obj.lx,wt)}
     else if(obj.tp==='npc'){drawNPCOnMap(ctx,obj.npc,obj.ns,wt)}
@@ -7028,31 +7036,40 @@ function doorFade(cb){
 
 function drawGasStation(ctx,sx,sy,h,now){
   const W=h.w*52,H=h.h*52;
-  // Building background
-  ctx.fillStyle='#1a3a88';ctx.fillRect(sx,sy,W,H);
-  // Roof
-  ctx.fillStyle='#0d2266';ctx.fillRect(sx,sy,W,H*.2);
-  // Blue canopy
-  ctx.fillStyle='#2255cc';ctx.fillRect(sx-10,sy+H*.15,W+20,H*.15);
-  ctx.strokeStyle='#88aaff';ctx.lineWidth=2;ctx.strokeRect(sx-10,sy+H*.15,W+20,H*.15);
-  // Gas pumps (2x)
-  [[.25,.35],[.65,.35]].forEach(([rx,ry])=>{
-    const px=sx+W*rx,py=sy+H*ry;
-    ctx.fillStyle='#1155cc';ctx.fillRect(px-8,py,16,H*.4);
-    ctx.fillStyle='#88aaff';ctx.fillRect(px-6,py+H*.05,12,H*.12);
-    ctx.fillStyle='#FFD700';ctx.font='bold 8px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('⛽',px,py+H*.22);
+  // Ground / concrete
+  ctx.fillStyle='#c8c0b0';ctx.fillRect(sx,sy+H*.6,W,H*.4);
+  for(let tx=0;tx<W;tx+=20){ctx.strokeStyle='rgba(0,0,0,.06)';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(sx+tx,sy+H*.6);ctx.lineTo(sx+tx,sy+H);ctx.stroke();}
+  // Canopy (blue)
+  ctx.fillStyle='#1155cc';ctx.fillRect(sx-8,sy+H*.15,W+16,H*.1);
+  ctx.fillStyle='#0d44aa';ctx.fillRect(sx-8,sy+H*.15,W+16,H*.02);
+  // Canopy poles
+  ctx.fillStyle='#0d44aa';ctx.fillRect(sx+W*.1,sy+H*.25,6,H*.35);ctx.fillRect(sx+W*.9-6,sy+H*.25,6,H*.35);
+  // Building body
+  ctx.fillStyle='#2255cc';ctx.fillRect(sx+W*.1,sy+H*.05,W*.8,H*.55);
+  // Windows
+  ctx.fillStyle='rgba(200,230,255,.6)';ctx.fillRect(sx+W*.15,sy+H*.12,W*.28,H*.2);ctx.fillRect(sx+W*.55,sy+H*.12,W*.28,H*.2);
+  ctx.strokeStyle='white';ctx.lineWidth=1.5;ctx.strokeRect(sx+W*.15,sy+H*.12,W*.28,H*.2);ctx.strokeRect(sx+W*.55,sy+H*.12,W*.28,H*.2);
+  // Door
+  ctx.fillStyle='rgba(180,210,255,.5)';ctx.fillRect(sx+W*.38,sy+H*.38,W*.24,H*.22);
+  ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1.5;ctx.strokeRect(sx+W*.38,sy+H*.38,W*.24,H*.22);
+  // Gas pumps
+  [[W*.22,H*.58],[W*.72,H*.58]].forEach(([px,py])=>{
+    ctx.fillStyle='#1a44aa';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(sx+px-7,sy+py,14,H*.32,4);else ctx.rect(sx+px-7,sy+py,14,H*.32);ctx.fill();
+    ctx.fillStyle='#88aaff';ctx.fillRect(sx+px-5,sy+py+H*.04,10,H*.1);
     // Nozzle
-    ctx.strokeStyle='#888';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px+8,py+H*.18);ctx.bezierCurveTo(px+22,py+H*.18,px+22,py+H*.32,px+16,py+H*.32);ctx.stroke();
+    ctx.strokeStyle='#666';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx+px+7,sy+py+H*.15);ctx.bezierCurveTo(sx+px+18,sy+py+H*.15,sx+px+18,sy+py+H*.26,sx+px+13,sy+py+H*.26);ctx.stroke();
+    ctx.fillStyle='#444';ctx.beginPath();ctx.arc(sx+px+13,sy+py+H*.26,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#FFD700';ctx.font='bold '+(W*.055)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⛽',sx+px,sy+py+H*.22);
   });
-  // Sign
-  ctx.fillStyle='rgba(0,0,0,.7)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(sx+W*.15,sy+H*.88,W*.7,H*.1,4);else ctx.rect(sx+W*.15,sy+H*.88,W*.7,H*.1);ctx.fill();
-  ctx.fillStyle='#88ddff';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('⛽ TRẠM XĂNG',sx+W/2,sy+H*.93);
-  // Price
-  ctx.fillStyle='#88ff88';ctx.font='bold 8px Arial';ctx.textAlign='center';
-  ctx.fillText('500đ/lần',sx+W/2,sy+H*.82);
+  // Price sign
+  ctx.fillStyle='rgba(0,30,100,.85)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(sx+W*.25,sy+H*.38,W*.5,H*.14,4);else ctx.rect(sx+W*.25,sy+H*.38,W*.5,H*.14);ctx.fill();
+  ctx.fillStyle='#88ffaa';ctx.font='bold '+(W*.045)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('500đ / lần đổ',sx+W/2,sy+H*.45);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font=(W*.04)+'px Arial';ctx.fillText('+25% xăng • Nhấn O',sx+W/2,sy+H*.52);
+  // Fuel indicator (shows player's current fuel if nearby)
+  ctx.fillStyle='rgba(0,0,0,.6)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(sx+W*.15,sy+H*.87,W*.7,H*.1,4);else ctx.rect(sx+W*.15,sy+H*.87,W*.7,H*.1);ctx.fill();
+  ctx.fillStyle='#88ddff';ctx.font='bold '+(W*.04)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⛽ TRẠM XĂNG',sx+W/2,sy+H*.92);
 }
+
 function drawDinhDocLap(ctx,sx,sy,h,now){
   const W=h.w*52,H=h.h*52;
   // Lawn (green)
