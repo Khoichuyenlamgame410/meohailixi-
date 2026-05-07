@@ -3324,8 +3324,17 @@ function drawOtherCat(ctx,sx,sy,now,op){
   // Held item above head
   if(op.held&&op.held!==''){
     ctx.save();
-    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(op.heldIcon||op.held,sx,sy-62);;
+    if(op.held==='co_vn'||op.heldIcon==='🚩'){
+      ctx.translate(sx+(op.facing>0?12:-12),(sy+(_jOff||0)-38));if(op.facing<0)ctx.scale(-1,1);
+      const _ofw=(op._flagWave||0)>0?Math.sin(Date.now()*.015)*18:2;
+      ctx.rotate(_ofw*Math.PI/180);
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-22);ctx.stroke();
+      ctx.fillStyle='#cc0000';ctx.fillRect(0,-22,18,12);
+      ctx.fillStyle='#FFD700';ctx.font='8px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⭐',9,-16);
+    } else {
+      ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(op.heldIcon||op.held,sx,sy-62);
+    }
     ctx.restore();
   }
   // Chat bubble
@@ -7466,6 +7475,16 @@ function initGame(){
     if(insideHouse&&insideHouse.shopItems){const n=parseInt(e.key);if(n>=1&&n<=9){buyShopItem(insideHouse,n-1)}}
     if(e.key==='Escape')closeAllOv();
     if(e.key==='i'||e.key==='I'){showInventory();e.preventDefault();}
+    if(e.key==='o'||e.key==='O'){
+      if(nearHouse&&nearHouse.isGas){
+        const _gc=500;
+        if(GS.money<_gc){toast('💰 Cần '+fmt(_gc)+'đ!');return;}
+        if((GS.fuel||0)>=100){toast('⛽ Xăng đầy rồi!');return;}
+        GS.money-=_gc;GS.fuel=Math.min(100,(GS.fuel||0)+25);
+        updateMoneyUI&&updateMoneyUI();save&&save();
+        toast('⛽ +25% xăng! Còn '+Math.round(GS.fuel||0)+'%');
+      }
+    }
     if(e.key==='t'||e.key==='T'){if(nearOnlinePlayer){sendHeart();toast('💌 Chào bạn bè!');}else toast('Không có ai gần đây!');}
   });
   window.addEventListener('keyup',e=>{if((e.key==='t'||e.key==='T')&&_soccer.active){_soccer.charging=false;}delete keys[e.key];});
@@ -8183,6 +8202,14 @@ function drawSchoolInterior(ctx,vw,vh,now){
   if(nearExit){_intNearNpc='exit';ctx.fillStyle='rgba(255,220,80,.9)';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('[E/X] Ra ngoài',entX,vh*.42);}
 }
 
+const HOURLY_GIFTS=[
+  {id:'g1m',  label:'1 phút',  mins:1,  reward:{money:50000}},
+  {id:'g5m',  label:'5 phút',  mins:5,  reward:{vnTokens:10}},
+  {id:'g10m', label:'10 phút', mins:10, reward:{diamond:3}},
+  {id:'g30m', label:'30 phút', mins:30, reward:{pet:'pet_lixi'}},
+  {id:'g60m', label:'1 giờ',   mins:60, reward:{diamond:10,money:500000}},
+];
+let _sessionStart=Date.now();
 function getSessionMinutes(){return Math.floor((Date.now()-_sessionStart)/60000);}
 function showDailyGift(){
   const today=new Date().toDateString();
