@@ -853,6 +853,14 @@ const HOUSES=[
 
   // ═══ DINH ĐỘC LẬP + EVENT 30/4 ═══
   {id:'gas_station',nm:'⛽ Trạm Xăng',col:75,row:35,w:6,h:5,hci:1,isGas:true},
+  {id:'event_shop',nm:'🛍️ Cửa Hàng Sự Kiện 30/4',col:70,row:23,w:7,h:5,hci:1,
+    shopItems:[
+      {id:'skin_vn',  nm:'Skin VN ⭐',   icon:'🇻🇳',price:30,  use:'hat',  vnCost:30, once:true,desc:'30 VN Token'},
+      {id:'mu_coi',   nm:'Mũ Cối ⛑️',   icon:'⛑️', price:100000,use:'hat', once:true, desc:'100.000đ'},
+      {id:'co_vn',    nm:'Cờ VN 🚩',     icon:'🚩',price:25,   use:'co_vn',vnCost:25, desc:'25 VN Token'},
+      {id:'xe_tang_v',nm:'Xe Tăng 🪖',   icon:'🪖',price:20,   use:'vehicle_tank',diamondCost:20,vnCost:75,once:true,desc:'20💎+75Token'},
+      {id:'mu_30_4',  nm:'Mũ 30/4 🎖️', icon:'🎖️',price:50,   use:'hat',  vnCost:50, once:true,desc:'50 VN Token'},
+    ]},
   {id:'dinh_doc_lap',nm:'🏛️ Dinh Độc Lập',col:55,row:22,w:14,h:10,hci:0,isEvent:true,
    shopItems:[
     {id:'skin_vn',  nm:'Skin VN ⭐',  icon:'🇻🇳',price:30,  use:'hat',  desc:'30 VN Token',   vnCost:30,once:true},
@@ -3190,7 +3198,7 @@ function drawCat(ctx,sx,sy,now,isMe,emo,wf,facing,state,skinId,jy,eyeColorOverri
   // ══ HAT OVERLAY ══════════════════════════════════
   if(isMe&&GS.equippedHat){
     const _mh=GS.equippedHat;
-    const _hR=R||13,_hjy=(jy||0);
+    const _hR=13,_hjy=(jy||0);
     ctx.save();ctx.translate(sx,sy+_hjy-_hR*2.2);
     if(_mh==='mu_noel'){
       ctx.fillStyle='#cc1111';ctx.beginPath();ctx.moveTo(-_hR*.65,0);ctx.lineTo(_hR*.65,0);ctx.lineTo(0,-_hR*1.5);ctx.closePath();ctx.fill();
@@ -5208,6 +5216,8 @@ function gameLoop(now){
     else if(obj.tp==='house'){
       if(obj.h.id==='gas_station'&&typeof drawGasStation==='function'){
         drawGasStation(ctx,obj.h.col*52-cam.x,obj.h.row*52-cam.y,obj.h,wt);
+      } else if(obj.h.id==='event_shop'&&typeof drawEventShop==='function'){
+        drawEventShop(ctx,obj.h.col*52-cam.x,obj.h.row*52-cam.y,obj.h,wt);
       } else if(obj.h.id==='dinh_doc_lap'&&typeof drawDinhDocLap==='function'){
         drawDinhDocLap(ctx,obj.h.col*52-cam.x,obj.h.row*52-cam.y,obj.h,wt);
       } else {
@@ -6745,7 +6755,7 @@ function checkLixi(){
   }
 }
 const ITEM_USE={
-  mu_noel:'hat',mu_magic:'hat',non_la:'hat',hat_sprout:'hat',mu_coi:'hat',skin_vn:'hat',xe_tang:'hat',co_vn:'item',
+  mu_noel:'hat',mu_magic:'hat',non_la:'hat',hat_sprout:'hat',mu_coi:'hat',skin_vn:'hat',xe_tang:'hat',mu_30_4:'hat',co_vn:'co_vn',
   can_cau:'rod', moi_thuong:'bait', moi_bac:'bait', moi_dao:'bait',
   tra_sua:'speed', nuoc_ngot:'speed', nuoc_ep:'speed', ca_phe:'speed',
   mut_tet:'luck', banh_nuong:'luck', dao_cake:'luck', tra_olong:'luck', tra_biao:'heal',
@@ -6840,6 +6850,7 @@ function showHatEyeShop(){
     {id:'non_la',nm:'Nón Lá',icon:'🌾',price:12000},
     {id:'hat_sprout',nm:'Mũ Mầm',icon:'🌱',price:18000},
     {id:'mu_coi',nm:'Mũ Cối',icon:'⛑️',price:100000},
+    {id:'mu_30_4',nm:'Mũ 30/4',icon:'🎖️',price:0,vnCost:50},
     {id:'skin_vn',nm:'Mũ VN',icon:'🇻🇳',price:0,vnCost:30},
   ];
   hatGrid.innerHTML='';
@@ -7043,6 +7054,38 @@ function doorFade(cb){
   requestAnimationFrame(()=>{ov.style.opacity='1';setTimeout(()=>{cb();ov.style.opacity='0';setTimeout(()=>{ov.remove();window._doorFading=false;},320);},300);});
 }
 
+function drawEventShop(ctx,sx,sy,h,now){
+  const W=h.w*52,H=h.h*52;
+  // Red patriotic building
+  ctx.fillStyle='#cc0000';ctx.fillRect(sx,sy+H*.05,W,H*.7);
+  // Yellow roof
+  ctx.fillStyle='#FFD700';ctx.fillRect(sx-5,sy,W+10,H*.08);
+  for(let t=0;t<W/20;t++){ctx.fillStyle=t%2===0?'#cc8800':'#FFD700';ctx.fillRect(sx+t*20,sy,18,H*.06);}
+  // Windows
+  for(let w=0;w<3;w++){
+    ctx.fillStyle='rgba(255,220,100,.5)';ctx.fillRect(sx+W*.1+w*(W*.28),sy+H*.12,W*.2,H*.25);
+    ctx.strokeStyle='#FFD700';ctx.lineWidth=1.5;ctx.strokeRect(sx+W*.1+w*(W*.28),sy+H*.12,W*.2,H*.25);
+  }
+  // Door
+  ctx.fillStyle='rgba(255,180,50,.4)';ctx.fillRect(sx+W*.38,sy+H*.45,W*.24,H*.3);
+  ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.strokeRect(sx+W*.38,sy+H*.45,W*.24,H*.3);
+  // VN flags on sides
+  [W*.05,W*.95].forEach(fx=>{
+    ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(sx+fx,sy+H*.0);ctx.lineTo(sx+fx,sy+H*.05);ctx.stroke();
+    ctx.fillStyle='#cc0000';ctx.beginPath();ctx.moveTo(sx+fx,sy+H*.01);ctx.lineTo(sx+fx+W*.06,sy+H*.03);ctx.lineTo(sx+fx,sy+H*.05);ctx.closePath();ctx.fill();
+  });
+  // Stars
+  ctx.fillStyle='#FFD700';ctx.font='bold '+(W*.12)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('⭐',sx+W/2,sy+H*.3);
+  // Sign
+  ctx.fillStyle='rgba(0,0,0,.75)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(sx+W*.05,sy+H*.78,W*.9,H*.13,4);else ctx.rect(sx+W*.05,sy+H*.78,W*.9,H*.13);ctx.fill();
+  ctx.fillStyle='#FFD700';ctx.font='bold '+(W*.055)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('🛍️ Cửa Hàng 30/4',sx+W/2,sy+H*.845);
+  // Pulsing glow
+  ctx.globalAlpha=0.05+Math.sin(now*.003)*.03;
+  ctx.fillStyle='#FFD700';ctx.fillRect(sx,sy,W,H);
+  ctx.globalAlpha=1;
+}
 function drawGasStation(ctx,sx,sy,h,now){
   const W=h.w*52,H=h.h*52;
   // Ground / concrete
