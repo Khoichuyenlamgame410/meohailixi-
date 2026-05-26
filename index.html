@@ -5905,7 +5905,7 @@ function e_touchMabE(ev){ev.preventDefault();
   }
   if(insideHouse&&insideHouse.isSkin){
     if(_intNearNpc==='exit'){exitHouse();return;}
-    if(_intNearNpc==='skin_npc'){buildShop();document.getElementById('shopOv').classList.add('on');return;}
+    if(_intNearNpc==='skin_npc'){showHatEyeShop&&showHatEyeShop();return;}
     return;
   }
   if(insideHouse){
@@ -6025,7 +6025,7 @@ function showShopBuyPanel(h){
     }
     gridEl.appendChild(d);
   });
-  el.style.display='flex';el.classList.add('on');
+  el.style.display='flex';el.style.visibility='visible';el.classList.add('on');
 }
 
 // ══ HOTBAR SYSTEM ══════════════════════════════════════════════════
@@ -6192,22 +6192,20 @@ function renderHotbar(){
     const div=document.createElement('div');
     div.className='hbslot'+(hotbarSel===i?' hbsel':'');
     if(slot){
-      div.innerHTML='<span class="hbicon">'+(slot.icon||'📦')+'</span>'+
-        '<span class="hbname">'+(slot.name||'').slice(0,8)+'</span>'+
-        ((slot.count||1)>1?'<span class="hbcnt">'+(slot.count)+'</span>':'')+
-        '<span class="hbkey">'+(i+1)+'</span>';
+      const _ico=slot.icon||slot.heldIcon||'📦';
+      const _nm=(slot.name||slot.nm||slot.id||'').slice(0,6);
+      const _cnt=slot.count>1?slot.count:'';
+      div.innerHTML='<div style="font-size:20px;line-height:1.1">'+_ico+'</div>'
+        +(_cnt?'<div style="position:absolute;top:1px;right:3px;font-size:9px;font-weight:700;color:#FFD700;background:rgba(0,0,0,.6);border-radius:8px;padding:0 3px">'+_cnt+'</div>':'')
+        +'<div style="font-size:7px;color:rgba(255,255,255,.8);line-height:1;margin-top:1px;overflow:hidden;max-width:38px;text-overflow:ellipsis;white-space:nowrap">'+_nm+'</div>';
+      div.onclick=()=>{hotbarSelect(i);};
     } else {
-      div.innerHTML='<span class="hbkey">'+(i+1)+'</span>';
+      div.innerHTML='<div style="font-size:10px;color:rgba(255,255,255,.15)">'+(i+1)+'</div>';
+      div.onclick=()=>{hotbarSelect(i);};
     }
-    div.onclick=(ii=>()=>hotbarSelect(ii))(i);
-    div.ontouchstart=(ii=>e=>{e.preventDefault();hotbarSelect(ii);})(i);
     bar.appendChild(div);
   }
 }
-
-// Pet icon map
-const PET_ICONS={'no_pet':'','pet_vang':'🐢','pet_hong':'🦋','pet_xanh':'⭐','pet_do':'🦊','pet_tim':'🐰','pet_fee':'🔥',
-  'ga_con':'🐣','tho_bong':'🐰','pet_rong':'🐲','pet_meo':'🐱'};
 
 function growPet(dt){
   if(!GS.pet||GS.pet==='no_pet')return;
@@ -8021,7 +8019,7 @@ function drawSkinShopInterior(ctx,vw,vh,now){
   const _snearDoor2=Math.abs(_intPlayer.x-vw*.5)<50&&_intPlayer.y>vh-90;
   if(_snearDoor2){_intNearNpc='exit';}
   ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(vw*.5-130,vh-22,260,20);
-  ctx.fillStyle='rgba(200,100,255,.9)';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('WASD di chuyển │ E: Tương tác │ X: Ra ngoài',vw*.5,vh-12);
+  ctx.fillStyle='rgba(200,100,255,.9)';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('WASD di chuyển │ E: 🎩 Mũ & Mắt │ X: Ra ngoài',vw*.5,vh-12);
   
   // ── HATS SECTION ─────────────────────────────────────────────
   const _HATS_S=[{id:'mu_noel',nm:'Noel',price:15000},{id:'mu_magic',nm:'Ảo Thuật',price:25000},{id:'non_la',nm:'Nón Lá',price:12000},{id:'hat_sprout',nm:'Mũ Mầm',price:18000},{id:'mu_coi',nm:'Mũ Cối',price:100000}];
