@@ -127,7 +127,7 @@ case 'water_gun':{
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Mèo Hái Lì Xì 2.1 🏮</title>
+<title>Mèo Hái Kho Báu 2.1 🏮</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;background:#0a0102;font-family:'Segoe UI',system-ui,sans-serif}
@@ -350,13 +350,46 @@ canvas{display:block;image-rendering:pixelated}
 </style>
 </head>
 <body>
-<canvas id="gc"></canvas>
+<div id="loginMenu" style="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0510,#05051a)">
+  <div style="background:linear-gradient(135deg,#1a0a2e,#0a0a1a);border:2px solid rgba(255,180,0,.4);border-radius:20px;padding:24px;max-width:340px;width:92%;box-shadow:0 16px 64px rgba(0,0,0,.8)">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:48px">🐱</div>
+      <div style="font-size:20px;font-weight:700;color:#FFD700">Mèo Cute Tết Việt Nam</div>
+      <div style="font-size:11px;color:#888;margin-top:3px">Online Multiplayer v2.1</div>
+    </div>
+    <div id="loginTabs" style="display:flex;gap:6px;margin-bottom:14px">
+      <button id="tabLogin" onclick="switchLoginTab('login')" style="flex:1;padding:7px;background:rgba(255,180,0,.2);border:1px solid rgba(255,180,0,.4);border-radius:8px;color:#FFD700;font-size:12px;font-weight:700;cursor:pointer">Đăng Nhập</button>
+      <button id="tabRegister" onclick="switchLoginTab('register')" style="flex:1;padding:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#aaa;font-size:12px;cursor:pointer">Tạo Tài Khoản</button>
+    </div>
+    <!-- Login form -->
+    <div id="formLogin">
+      <input id="loginName" placeholder="Tên đăng nhập" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:13px;margin-bottom:8px">
+      <input id="loginPass" type="password" placeholder="Mật khẩu" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:13px;margin-bottom:8px">
+      <button onclick="doLogin()" style="width:100%;padding:10px;background:linear-gradient(135deg,#884400,#cc6600);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px">🎮 Bắt Đầu Phiêu Lưu</button>
+      <button onclick="doForgotPass()" style="width:100%;padding:6px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#888;font-size:11px;cursor:pointer">Quên mật khẩu?</button>
+    </div>
+    <!-- Register form -->
+    <div id="formRegister" style="display:none">
+      <input id="regName" placeholder="Tên nhân vật (3-16 ký tự)" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:13px;margin-bottom:8px">
+      <input id="regPass" type="password" placeholder="Mật khẩu (5+ ký tự, chữ + số)" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:13px;margin-bottom:8px">
+      <input id="regPass2" type="password" placeholder="Nhập lại mật khẩu" style="width:100%;box-sizing:border-box;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:13px;margin-bottom:8px">
+      <div id="regErr" style="color:#ff6666;font-size:10px;margin-bottom:6px;min-height:14px"></div>
+      <button onclick="doRegister()" style="width:100%;padding:10px;background:linear-gradient(135deg,#224488,#4466cc);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">✨ Tạo Tài Khoản</button>
+    </div>
+  </div>
+</div>
+<canvas id="gc" ></canvas>
 <canvas id="fwc"></canvas>
 <canvas id="petalC"></canvas>
 <div id="doorFade"></div>
 <div id="mpop"></div>
 <!-- HUD -->
-<div id="hud">
+<div id="profileBtn" onclick="toggleProfilePanel()" style="position:fixed;top:8px;left:8px;z-index:150;display:flex;align-items:center;gap:6px;cursor:pointer;background:linear-gradient(135deg,rgba(20,10,40,.85),rgba(10,5,20,.85));border:1.5px solid rgba(255,180,0,.35);border-radius:12px;padding:4px 8px;box-shadow:0 4px 12px rgba(0,0,0,.4)">
+  <div id="profileAvatar" style="font-size:22px">🐱</div>
+  <div><div id="profileName" style="font-size:11px;font-weight:700;color:#FFD700;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Mèo</div>
+  <div style="font-size:9px;color:#aaa">Lv <span id="profileLv">1</span></div></div>
+</div>
+<div id="hud" >
   <div id="mbox">🧧<span id="mval">0d</span></div><div id="waterAmmoDisplay" style="display:none;font-size:10px;letter-spacing:-1px;align-items:center;background:rgba(0,50,100,.5);border:1px solid #44aaff;border-radius:10px;padding:2px 6px;color:#88ddff">💦💦💦💦💦💦💦💦💦💦</div><!-- Hunger/sleep bars -->
 <div id="fuelBar" style="position:fixed;bottom:150px;right:10px;z-index:60;display:none;align-items:center;gap:4px;pointer-events:none">
   <span style="font-size:11px">⛽</span>
@@ -468,6 +501,24 @@ canvas{display:block;image-rendering:pixelated}
 <div id="chat">
   <div id="clog"></div>
   <div id="cin"><input id="ct" type="text" placeholder="Nhắn tin..." maxlength="60"><button id="cs">Gửi</button></div>
+</div>
+<!-- PHONE UI -->
+<div id="phoneOuter" style="position:fixed;right:10px;bottom:140px;z-index:200">
+  <div id="phoneBtn" onclick="togglePhone()" style="width:44px;height:44px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid rgba(100,200,255,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;box-shadow:0 4px 15px rgba(0,0,0,.4)">📱</div>
+</div>
+<div id="phonePanel" style="display:none;position:fixed;right:10px;bottom:195px;z-index:300;width:280px;background:linear-gradient(160deg,#0d0d1a,#1a0d2e);border:2px solid rgba(100,150,255,.3);border-radius:20px;padding:0;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.6)">
+  <!-- Phone header -->
+  <div style="background:linear-gradient(135deg,#1a0a2e,#0d0d2e);padding:8px 12px;border-bottom:1px solid rgba(100,150,255,.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;font-weight:700;color:#88aaff" id="phoneClock">00:00</span>
+      <span style="font-size:11px;color:#aaa" id="phoneDate"></span>
+      <span onclick="togglePhone()" style="cursor:pointer;color:#888;font-size:16px">✕</span>
+    </div>
+  </div>
+  <!-- App Grid -->
+  <div id="phoneAppGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px"></div>
+  <!-- App Content -->
+  <div id="phoneAppContent" style="display:none;padding:10px;max-height:340px;overflow-y:auto;border-top:1px solid rgba(100,150,255,.15)"></div>
 </div>
 <!-- TELEPORT MENU -->
 <div id="tpMenu" style="position:fixed;top:40px;left:50%;transform:translateX(-50%);z-index:400;
@@ -589,7 +640,7 @@ canvas{display:block;image-rendering:pixelated}
 <!-- NAME -->
 <div class="ov on" id="nameOv">
   <div class="card" style="text-align:center">
-    <h2>🏮 Mèo Hái Lì Xì 2.1</h2>
+    <h2>🏮 Mèo Hái Kho Báu 2.1</h2>
     <p>Tết Ất Tỵ 2026! Nhập tên mèo:</p>
     <input id="nin" type="text" placeholder="Tên mèo..." maxlength="16">
     <button class="hb" style="margin:0 auto;padding:8px 22px;font-size:13px" id="nameOk">Bắt đầu 🎊</button>
@@ -604,7 +655,7 @@ canvas{display:block;image-rendering:pixelated}
 </div>
 <!-- BLESSING -->
 <div class="ov" id="blessOv">
-  <div class="card"><h2 id="blessT">🧧 Lời Chúc Tết</h2><p id="blessD">Chọn lời chúc để nhận lì xì</p>
+  <div class="card"><h2 id="blessT">🧧 Lời Chúc Tết</h2><p id="blessD">Chọn lời chúc để nhận kho báu</p>
     <div class="bops" id="bopsEl">
       <div class="bop" data-v="300000">🌸 "Chúc sống dài thành huyền thoại!"</div>
       <div class="bop" data-v="400000">💰 "Tiền vô như nước sông Đà!"</div>
@@ -743,15 +794,15 @@ const UPG_FSH=[0,25000,70000,160000,320000,580000];
 // ── NPCs ──────────────────────────────────────────────────
 const NPCS=[
   {id:'n0',nm:'Cô Vàng',  skin:'vang', col:47,row:44, lines:['Chúc mừng năm mới phát tài!','Phố mình đẹp lắm, dạo xung quanh nhé!','Mèo dễ thương quá luôn!']},
-  {id:'n1',nm:'Bà Tuyết', skin:'trang',col:55,row:44, lines:['Ăn Tết vui vẻ, sức khỏe dồi dào!','Vào nhà nhận lì xì nhé mèo ơi!','Hoa đào năm nay nở đẹp quá!']},
+  {id:'n1',nm:'Bà Tuyết', skin:'trang',col:55,row:44, lines:['Ăn Tết vui vẻ, sức khỏe dồi dào!','Vào nhà nhận kho báu nhé mèo ơi!','Hoa đào năm nay nở đẹp quá!']},
   {id:'n2',nm:'Chị Hồng', skin:'hong', col:63,row:44, lines:['Phát tài phát lộc năm mới!','Tiền vào như nước sông Đà đó!','Chúc mừng năm mới vui vẻ!']},
-  {id:'n3',nm:'Chú Đen',  skin:'den',  col:14,row:44, lines:['Mèo ơi! Giúp chú nấu bánh tét?','Lượm lá dong (🍀) và nếp (🌾) quanh đây nhé!','Cảm ơn! Chú thưởng lì xì to!'],quest:'banhtet'},
-  {id:'n4',nm:'Anh Cam',  skin:'cam',  col:51,row:44, lines:['Giúp anh mua cành mai ở tiệm hoa!','Tiệm hoa ở góc phố phía đông kia!','Cảm ơn! Anh tặng lì xì xịn!'],quest:'muahoa'},
+  {id:'n3',nm:'Chú Đen',  skin:'den',  col:14,row:44, lines:['Mèo ơi! Giúp chú nấu bánh tét?','Lượm lá dong (🍀) và nếp (🌾) quanh đây nhé!','Cảm ơn! Chú thưởng kho báu to!'],quest:'banhtet'},
+  {id:'n4',nm:'Anh Cam',  skin:'cam',  col:51,row:44, lines:['Giúp anh mua cành mai ở tiệm hoa!','Tiệm hoa ở góc phố phía đông kia!','Cảm ơn! Anh tặng kho báu xịn!'],quest:'muahoa'},
   {id:'n5',nm:'Cụ Ba',    skin:'muop', col:21,row:22, lines:['Trời đất phong thanh, năm mới phát lộc!','Phố nhỏ yên tĩnh, dạo mát nhé!','Cố gắng lên, thành công sẽ đến!']},
   {id:'n6',nm:'Em Xanh',  skin:'xanh', col:60,row:44, lines:['Vườn đào phía nam đẹp lắm!','Mình vừa từ vườn đào về nè!','Năm nay hoa nở rất rực rỡ!']},
 ,
   {id:'n7',nm:'Bà Ngọc',  skin:'trang',col:113,row:44,lines:['Phố đông đẹp lắm!','Câu cá ở hồ lớn đi!','Chúc mừng năm mới!']},
-  {id:'n8',nm:'Chú Bình', skin:'muop', col:117,row:44,lines:['Hoa đông nở đẹp lắm!','Nhận lì xì các nhà đông nhé!','Năm nay bội thu!']},
+  {id:'n8',nm:'Chú Bình', skin:'muop', col:117,row:44,lines:['Hoa đông nở đẹp lắm!','Nhận kho báu các nhà đông nhé!','Năm nay bội thu!']},
   {id:'n9',nm:'Em Tím',   skin:'tia',  col:121,row:44,lines:['Câu đủ 3 con cá hồ đông đi!','Mang cá lại cho mình nhé!','Hồ đông nhiều cá quý lắm đó!'],quest:'caucavip'},
   // Outdoor NPCs — outside town, near special spots
   {id:'n10',nm:'Cô Đào',  skin:'hong', col:44,row:66,lines:['🌸 Chào mừng tới Rừng Đào Nở!','Hoa đào nở đẹp lắm, dạo quanh nhé!','Trà hoa đào ngon tuyệt trời!']},
@@ -772,21 +823,21 @@ const NPCS=[
 const HOUSES=[
   // === DÃY BẮC PHỐ CHÍNH (row 38-41, south onto road 43-46) ===
   {id:'bani',  nm:'Nhà Bà Nội',    col:45,row:38, w:4,h:4, gift:25000, desc:'Nhà ấm cúng của bà',   skin:'trang',hci:0},
-  {id:'chtam', nm:'Nhà Chú Tám',   col:49,row:38, w:4,h:4, gift:18000, desc:'Chú Tám tặng lì xì',   skin:'muop', hci:1},
+  {id:'chtam', nm:'Nhà Chú Tám',   col:49,row:38, w:4,h:4, gift:18000, desc:'Chú Tám tặng kho báu',   skin:'muop', hci:1},
   {id:'bac',   nm:'Nhà Bác Hai',   col:53,row:38, w:4,h:4, gift:20000, desc:'Bác Hai chúc phát tài', skin:'den',  hci:2},
-  {id:'co3',   nm:'Nhà Cô Ba',     col:57,row:38, w:4,h:4, gift:15000, desc:'Cô Ba tặng lì xì đặc', skin:'hong', hci:3},
+  {id:'co3',   nm:'Nhà Cô Ba',     col:57,row:38, w:4,h:4, gift:15000, desc:'Cô Ba tặng kho báu đặc', skin:'hong', hci:3},
   {id:'co5',   nm:'Nhà Cô Năm',    col:61,row:38, w:4,h:4, gift:12000, desc:'Cô Năm chúc vạn sự',   skin:'xanh', hci:4},
-  {id:'ongs',  nm:'Nhà Ông Sáu',   col:65,row:38, w:4,h:4, gift:16000, desc:'Ông Sáu tặng lì xì',   skin:'vang', hci:5},
+  {id:'ongs',  nm:'Nhà Ông Sáu',   col:65,row:38, w:4,h:4, gift:16000, desc:'Ông Sáu tặng kho báu',   skin:'vang', hci:5},
   // === DÃY NAM PHỐ CHÍNH (row 50-53, north onto road 47-49) ===
   {id:'dlang', nm:'Đình Làng',     col:45,row:50, w:5,h:5, gift:12000, desc:'Đình làng cổ truyền',   skin:'vang', hci:0},
   {id:'ongtu', nm:'Nhà Ông Tư',    col:50,row:50, w:4,h:4, gift:16000, desc:'Ông Tư xông đất',       skin:'vang', hci:6},
   {id:'disan', nm:'Nhà Dì Sáu',    col:54,row:50, w:4,h:4, gift:14000, desc:'Dì Sáu phát lộc',       skin:'tia',  hci:7},
   {id:'chubay',nm:'Nhà Chú Bảy',   col:58,row:50, w:4,h:4, gift:11000, desc:'Chú Bảy sức khỏe',     skin:'muop', hci:1},
-  {id:'bamui', nm:'Nhà Bà Mười',   col:62,row:50, w:4,h:4, gift:19000, desc:'Bà Mười lì xì đỏ',     skin:'hong', hci:3},
+  {id:'bamui', nm:'Nhà Bà Mười',   col:62,row:50, w:4,h:4, gift:19000, desc:'Bà Mười kho báu đỏ',     skin:'hong', hci:3},
   // === PHỐ NHỎ (col 9-28, row 20-23) ===
   {id:'den',   nm:'Đền Thờ',       col:9, row:20, w:5,h:5, gift:30000, desc:'Đền thờ linh thiêng',   skin:'vang', hci:0},
   {id:'ongch', nm:'Nhà Ông Chín',  col:15,row:20, w:4,h:4, gift:22000, desc:'Ông Chín thịnh vượng',  skin:'vang', hci:5},
-  {id:'bamui2',nm:'Nhà Bà Mười',   col:19,row:20, w:4,h:4, gift:19000, desc:'Bà Mười lì xì đỏ',     skin:'hong', hci:7},
+  {id:'bamui2',nm:'Nhà Bà Mười',   col:19,row:20, w:4,h:4, gift:19000, desc:'Bà Mười kho báu đỏ',     skin:'hong', hci:7},
   {id:'comui', nm:'Nhà Cô Mười',   col:23,row:20, w:4,h:4, gift:17000, desc:'Cô Mười may mắn',       skin:'trang',hci:2},
   // === CỬA HÀNG (shops with interiors) ===
   {id:'cafe',  nm:'Quán Cà Phê',   col:69,row:38, w:4,h:4, gift:0, desc:'☕ Cà phê & bánh mì ngon', skin:'trang',isCafe:1,  hci:3, shopItems:[
@@ -853,14 +904,6 @@ const HOUSES=[
 
   // ═══ DINH ĐỘC LẬP + EVENT 30/4 ═══
   {id:'gas_station',nm:'⛽ Trạm Xăng',col:75,row:35,w:6,h:5,hci:1,isGas:true},
-  {id:'event_shop',nm:'🛍️ Cửa Hàng Sự Kiện 30/4',col:70,row:23,w:7,h:5,hci:1,
-    shopItems:[
-      {id:'skin_vn',  nm:'Skin VN ⭐',   icon:'🇻🇳',price:30,  use:'hat',  vnCost:30, once:true,desc:'30 VN Token'},
-      {id:'mu_coi',   nm:'Mũ Cối ⛑️',   icon:'⛑️', price:100000,use:'hat', once:true, desc:'100.000đ'},
-      {id:'co_vn',    nm:'Cờ VN 🚩',     icon:'🚩',price:25,   use:'co_vn',vnCost:25, desc:'25 VN Token'},
-      {id:'xe_tang_v',nm:'Xe Tăng 🪖',   icon:'🪖',price:20,   use:'vehicle_tank',diamondCost:20,vnCost:75,once:true,desc:'20💎+75Token'},
-      {id:'mu_30_4',  nm:'Mũ 30/4 🎖️', icon:'🎖️',price:50,   use:'hat',  vnCost:50, once:true,desc:'50 VN Token'},
-    ]},
   {id:'dinh_doc_lap',nm:'🏛️ Dinh Độc Lập',col:55,row:22,w:14,h:10,hci:0,isEvent:true,
    shopItems:[
     {id:'skin_vn',  nm:'Skin VN ⭐',  icon:'🇻🇳',price:30,  use:'hat',  desc:'30 VN Token',   vnCost:30,once:true},
@@ -3777,7 +3820,7 @@ function drawHouseInterior(ctx,vw,vh,h,now){
   // Interact hint
   if(_hNearNPC){
     ctx.fillStyle='rgba(255,215,0,.95)';ctx.font='bold 10px Arial';ctx.textAlign='center';
-    ctx.fillText(h.shopItems?'Nhấn E để mua hàng':'Nhấn E để nhận lì xì! 🧧',npx,npy-110);
+    ctx.fillText(h.shopItems?'Nhấn E để mua hàng':'Nhấn E để nhận kho báu! 🧧',npx,npy-110);
   }
   // NPC near check for exit door
   const _nearDoor=_hpx<80&&_hpy>vh-100;
@@ -4614,7 +4657,7 @@ function handleNetMsg(d){
 function startMG(type){
   mg.active=true;mg.type=type;mg.t=30;mg.sc=0;mg.objs=[];
   document.getElementById('mga').classList.add('on');
-  document.getElementById('mgT').textContent=type==='flappy'?'Flappy Cat':type==='hai'?'Hái Lộc':'Bắt Lì Xì';
+  document.getElementById('mgT').textContent=type==='flappy'?'Flappy Cat':type==='hai'?'Hái Lộc':'Bắt Kho Báu';
   document.getElementById('mgTime').textContent='30';document.getElementById('mgSc').textContent='0';
   cancelAnimationFrame(mg.raf);
   if(type==='flappy')runFlappy();else if(type==='hai')runHaiLoc();else runBatLixi();
@@ -4723,7 +4766,7 @@ function initNPCs(){
 }
 function updateNPCs(dt){
   // NPC thought bubbles timer
-  const _NPHR=['☕ Uống trà đi!','🎋 Năm mới vui!','🎁 Chúc lì xì!','🌸 Đẹp quá!','🐱 Cute!','🎣 Câu cá đi!','💰 Làm giàu!','😴 Buồn ngủ...','⭐ May mắn!','🎵 La la la~'];
+  const _NPHR=['☕ Uống trà đi!','🎋 Năm mới vui!','🎁 Chúc kho báu!','🌸 Đẹp quá!','🐱 Cute!','🎣 Câu cá đi!','💰 Làm giàu!','😴 Buồn ngủ...','⭐ May mắn!','🎵 La la la~'];
   if(!window._npcThoughts)window._npcThoughts=NPCS.map((_,_xi)=>({text:'',show:0,cd:4+_xi*1.1}));
   npcStates.forEach((ns,i)=>{
     if(!ns)return;
@@ -5034,6 +5077,11 @@ function gameLoop(now){
     updateWaterBullets(dt);
     updateNeeds(dt);
     updateWeather(dt);
+    // Passive income every 5 minutes
+    if(typeof _passiveTimer!=='undefined'){
+      _passiveTimer+=dt;
+      if(_passiveTimer>=300){_passiveTimer=0;GS.money+=30000;updateMoneyUI&&updateMoneyUI();save&&save();toast('⏰ Phần thưởng 5 phút: +30.000đ!');}
+    }
     {const _kmhEl=document.getElementById('kmhVal');const _kmhDisp=document.getElementById('kmhDisplay');
     const _fuelBar=document.getElementById('fuelBar');const _fuelFill=document.getElementById('fuelFill');const _fuelPct=document.getElementById('fuelPct');
     if(_vehicle&&_vehicle.active){
@@ -6231,61 +6279,29 @@ function drawLixi(ctx,lx,now){
   if(lx.collected)return;
   const sx=lx.x-cam.x,sy=lx.y-cam.y;
   if(sx<-80||sx>ctx.canvas.width+80||sy<-80||sy>ctx.canvas.height+80)return;
-  if(!lx.tier)lx.tier=LIXI_TIERS[Math.floor(Math.random()*LIXI_TIERS.length)];
-  const bob=Math.sin(now*.003+lx.id*.7)*5;
+  const bob=Math.sin(now*.002+lx.id*.7)*4;
   const sy2=sy+bob;
   ctx.save();
   // Shadow
-  ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(sx,sy2+20,9,3,0,0,Math.PI*2);ctx.fill();
-  // Envelope body (canvas drawn, classic style)
-  const ew=26,eh=18;
-  ctx.fillStyle='#cc1111';
-  ctx.beginPath();ctx.moveTo(sx-ew/2,sy2-eh/2);ctx.lineTo(sx+ew/2,sy2-eh/2);
-  ctx.lineTo(sx+ew/2,sy2+eh/2);ctx.lineTo(sx-ew/2,sy2+eh/2);ctx.closePath();ctx.fill();
-  // Gold border
-  ctx.strokeStyle='#FFD700';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(sx-ew/2,sy2-eh/2);ctx.lineTo(sx+ew/2,sy2-eh/2);
-  ctx.lineTo(sx+ew/2,sy2+eh/2);ctx.lineTo(sx-ew/2,sy2+eh/2);ctx.closePath();ctx.stroke();
-  // V-flap on top
-  ctx.fillStyle='#aa0808';
-  ctx.beginPath();ctx.moveTo(sx-ew/2,sy2-eh/2);ctx.lineTo(sx,sy2+1);ctx.lineTo(sx+ew/2,sy2-eh/2);ctx.closePath();ctx.fill();
-  ctx.strokeStyle='#FFD700';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(sx-ew/2,sy2-eh/2);ctx.lineTo(sx,sy2+1);ctx.lineTo(sx+ew/2,sy2-eh/2);ctx.stroke();
-  // Gold coin decoration
-  ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(sx,sy2+7,4,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#cc8800';ctx.lineWidth=1;ctx.beginPath();ctx.arc(sx,sy2+7,4,0,Math.PI*2);ctx.stroke();
-  ctx.fillStyle='#7a4000';ctx.font='bold 5px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('福',sx,sy2+7);
+  ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(sx,sy2+22,10,3,0,0,Math.PI*2);ctx.fill();
+  // Treasure chest body
+  ctx.fillStyle='#8B4513';ctx.fillRect(sx-16,sy2-8,32,18);
+  // Chest lid
+  ctx.fillStyle='#A0522D';ctx.fillRect(sx-16,sy2-18,32,12);
+  ctx.beginPath();ctx.arc(sx,sy2-18,16,Math.PI,Math.PI*2);ctx.fill();
+  // Gold bands
+  ctx.strokeStyle='#FFD700';ctx.lineWidth=2;ctx.strokeRect(sx-16,sy2-8,32,18);ctx.strokeRect(sx-16,sy2-18,32,12);
+  ctx.beginPath();ctx.moveTo(sx-16,sy2-8);ctx.lineTo(sx+16,sy2-8);ctx.stroke();
+  // Lock
+  ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(sx,sy2-3,4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#cc8800';ctx.beginPath();ctx.arc(sx,sy2-3,2,0,Math.PI*2);ctx.fill();
   // Glow
-  ctx.globalAlpha=0.12+Math.sin(now*.004+lx.id)*.06;
-  ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(sx,sy2,26,0,Math.PI*2);ctx.fill();
-  ctx.globalAlpha=1;ctx.restore();
+  ctx.globalAlpha=0.1+Math.sin(now*.004)*0.05;
+  ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(sx,sy2,28,0,Math.PI*2);ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.restore();
 }
 
-const EYE_COLORS=[
-  {id:'#3a8ee0',nm:'Xanh Dương',price:0},
-  {id:'#22cc44',nm:'Xanh Lá',price:5000},
-  {id:'#cc8822',nm:'Nâu Hổ',price:8000},
-  {id:'#9933cc',nm:'Tím',price:12000},
-  {id:'#ffaa00',nm:'Vàng Hổ',price:20000},
-  {id:'#00cccc',nm:'Xanh Ngọc',price:25000},
-  {id:'#ff6688',nm:'Hồng',price:30000},
-  {id:'#ffffff',nm:'Trắng',price:40000},
-  {id:'#ff0000',nm:'Đỏ Rực 🔥',price:80000},
-  {id:'rainbow',nm:'Cầu Vồng ✨',price:200000},
-];
-const LIXI_TIERS=[
-  {amt:10000,  label:'10k',  color:'#cc1111',prob:.30},
-  {amt:20000,  label:'20k',  color:'#cc3300',prob:.22},
-  {amt:30000,  label:'30k',  color:'#bb4400',prob:.16},
-  {amt:50000,  label:'50k',  color:'#aa5500',prob:.13},
-  {amt:100000, label:'100k', color:'#887700',prob:.08},
-  {amt:150000, label:'150k', color:'#558800',prob:.04},
-  {amt:200000, label:'200k', color:'#228800',prob:.03},
-  {amt:300000, label:'300k', color:'#007744',prob:.015},
-  {amt:400000, label:'400k', color:'#004499',prob:.006},
-  {amt:450000, label:'450k', color:'#330099',prob:.003},
-  {amt:500000, label:'500k', color:'#880055',prob:.001},
-];
 function pickLixiTier(){
   const lk=Math.min(2.5,1+(GS.lckLvl||0)*.18);
   let r=Math.random()/lk,cum=0;
@@ -6300,7 +6316,7 @@ function startLixiOpen(lx){
     phase:'shake',alpha:1,particles:[],
     greeting:lx.tier.amt>=500000?['🎊 JACKPOT 500K! 🎊','Đại cát đại lợi! Vạn sự như ý!']:
       lx.tier.amt>=200000?['🎉 LỘC LỚN '+fmt(lx.tier.amt)+'đ!','Phát tài phát lộc năm mới!']:
-      ['🧧 Lì Xì '+fmt(lx.tier.amt)+'đ!','Chúc mừng năm mới an khang!']};
+      ['🎁 Kho Báu '+fmt(lx.tier.amt)+'đ!','Chúc mừng năm mới an khang!']};
 }
 function drawLixiOpenUI(ctx,vw,vh,now){
   if(!_lixiOpen)return;
@@ -6332,7 +6348,7 @@ function drawLixiOpenUI(ctx,vw,vh,now){
     ctx.font='bold 14px Arial';ctx.fillStyle='#FFD700';ctx.textAlign='center';
     ctx.fillText('Nhấn '+(lo.needed-lo.clicks)+' lần nữa!',cx,cy+68);
     ctx.font='11px Arial';ctx.fillStyle='rgba(255,220,100,.7)';
-    ctx.fillText('🎊 Lì xì bí ẩn đang chờ...',cx,cy+85);
+    ctx.fillText('🎊 Kho báu bí ẩn đang chờ...',cx,cy+85);
   } else {
     lo.alpha=Math.max(0,lo.alpha-.016);
     ctx.globalAlpha=lo.alpha;
@@ -6375,7 +6391,7 @@ function clickLixiOpen(){
       toast('🎆🎊 500K LÌ XÌ ĐẠI CÁT! Phát tài phát lộc! 🎊🎆',6000);
       for(let fi=0;fi<8;fi++)setTimeout(()=>typeof startFW==='function'&&startFW(),fi*300);
     } else if(t.amt>=200000){
-      toast('🎉 '+t.label+' lì xì may mắn! 🎉',4000);
+      toast('🎉 '+t.label+' kho báu may mắn! 🎉',4000);
     }
   }
 }
@@ -7013,7 +7029,20 @@ function tryEnterHouse(h){
       _intPlayer={x:_vwSk*.2,y:_vhSk*.65,room:0};_intNearNpc=null;
     if(isMobile){const dp=document.getElementById('dp');if(dp)dp.style.display='flex';
       const ex=document.getElementById('mabExit');if(ex)ex.style.display='block';}});return;}
-  if(h.id==='dinh_doc_lap'){toast('🏛️ Dinh Độc Lập không mở cửa cho công chúng!');return;}
+  if(h.id==='dinh_doc_lap'){
+    // Pay 5k entrance fee
+    if(GS.money<5000){toast('💰 Cần 5.000đ mua vé vào Dinh Độc Lập!');return;}
+    GS.money-=5000;updateMoneyUI&&updateMoneyUI();save&&save();
+    // Enter dinh - show beautiful interior
+    insideHouse=h;
+    const _cvD=document.getElementById('gc');
+    const _vwD=_cvD?_cvD.width:window.innerWidth;
+    const _vhD=_cvD?_cvD.height:window.innerHeight;
+    _intPlayer={x:_vwD*.5,y:_vhD*.6};
+    if(typeof _intCam!=='undefined')_intCam={x:0,y:0};
+    toast('🏛️ Đã vào Dinh Độc Lập! (Vé: -5.000đ)');
+    return;
+  }
   if(h.isArcade){openParkour&&openParkour();return;}
   if(h.isChess){onEnterChessClub&&onEnterChessClub();return;}
   if(h.isEasterShop){showEasterShop&&showEasterShop();return;}
@@ -7083,6 +7112,53 @@ function drawEventShop(ctx,sx,sy,h,now){
   ctx.globalAlpha=0.05+Math.sin(now*.003)*.03;
   ctx.fillStyle='#FFD700';ctx.fillRect(sx,sy,W,H);
   ctx.globalAlpha=1;
+}
+function drawDinhInterior(ctx,vw,vh,now){
+  // Beautiful garden interior
+  // Sky gradient
+  const sky=ctx.createLinearGradient(0,0,0,vh);
+  sky.addColorStop(0,'#87CEEB');sky.addColorStop(.5,'#e0f0ff');sky.addColorStop(1,'#a0d870');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,vw,vh);
+  // Grass
+  ctx.fillStyle='#4a9e20';ctx.fillRect(0,vh*.55,vw,vh*.45);
+  // Stone path
+  ctx.fillStyle='#c8b890';ctx.fillRect(vw*.4,vh*.55,vw*.2,vh*.45);
+  for(let p=0;p<8;p++){ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=1;ctx.strokeRect(vw*.4+p%2*vw*.1,vh*.55+Math.floor(p/2)*vh*.08,vw*.09,vh*.07);}
+  // Waterfall (left side)
+  for(let w=0;w<5;w++){
+    ctx.fillStyle='rgba(100,180,255,'+(0.3+w*.08)+')';
+    ctx.fillRect(vw*.05+w*6,vh*.1,4,vh*.45);
+  }
+  ctx.fillStyle='rgba(150,200,255,.4)';ctx.beginPath();ctx.ellipse(vw*.1,vh*.55,50,10,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#88ccff';ctx.font='20px serif';ctx.textAlign='center';ctx.fillText('💧',vw*.1,vh*.3);
+  // Trees
+  [[vw*.2,vh*.6],[vw*.75,vh*.62],[vw*.15,vh*.7],[vw*.82,vh*.68]].forEach(([tx,ty])=>{
+    ctx.fillStyle='#4a2a08';ctx.fillRect(tx-5,ty-50,10,55);
+    ctx.fillStyle='#228822';ctx.beginPath();ctx.arc(tx,ty-55,25,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#1a7a1a';ctx.beginPath();ctx.arc(tx+5,ty-68,16,0,Math.PI*2);ctx.fill();
+  });
+  // Rose flowers
+  [[vw*.3,vh*.58],[vw*.65,vh*.6],[vw*.25,vh*.68],[vw*.72,vh*.72]].forEach(([fx,fy])=>{
+    ctx.fillStyle='#3a7a20';ctx.fillRect(fx-2,fy-15,4,18);
+    ctx.fillStyle='#cc2244';ctx.beginPath();ctx.arc(fx,fy-18,7,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ff4466';ctx.beginPath();ctx.arc(fx-3,fy-22,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ff6688';ctx.beginPath();ctx.arc(fx+3,fy-21,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ffff44';ctx.font='8px serif';ctx.textAlign='center';ctx.fillText('🌹',fx,fy-20);
+  });
+  // Chrysanthemum flowers (cúc)
+  [[vw*.55,vh*.65],[vw*.4,vh*.72],[vw*.68,vh*.7]].forEach(([fx,fy])=>{
+    ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(fx,fy,8,0,Math.PI*2);ctx.fill();
+    for(let p=0;p<8;p++){const a=p/8*Math.PI*2;ctx.fillStyle='#FFD700';ctx.beginPath();ctx.ellipse(fx+Math.cos(a)*12,fy+Math.sin(a)*12,4,6,a,0,Math.PI*2);ctx.fill();}
+  });
+  // Player
+  const _hpx=_intPlayer.x,_hpy=_intPlayer.y;
+  ctx.fillStyle='rgba(0,0,0,.15)';ctx.beginPath();ctx.ellipse(_hpx,_hpy+14,12,4,0,0,Math.PI*2);ctx.fill();
+  drawCat(ctx,_hpx,_hpy,now,true,currEmo,cat.wf||0,cat.facing,cat.state||'idle',GS.skin,0);
+  // Exit hint
+  if(Math.abs(_intPlayer.x-vw*.5)<80&&_intPlayer.y>vh*.6){_intNearNpc='exit';ctx.fillStyle='rgba(255,220,80,.9)';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('[E/X] Ra ngoài',vw*.5,vh*.55);}
+  else{_intNearNpc=null;}
+  ctx.fillStyle='rgba(0,0,0,.65)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(vw*.2,vh*.02,vw*.6,vh*.04,4);else ctx.rect(vw*.2,vh*.02,vw*.6,vh*.04);ctx.fill();
+  ctx.fillStyle='#FFD700';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🏛️ Dinh Độc Lập — Vườn Hoa & Thác Nước',vw*.5,vh*.04);
 }
 function drawGasStation(ctx,sx,sy,h,now){
   const W=h.w*52,H=h.h*52;
@@ -7299,6 +7375,334 @@ window.changeNameDiamond=function(){
   const nn=prompt('Tên mới:',GS.playerName);
   if(nn&&nn.trim()){GS.diamonds-=3;GS.playerName=nn.trim().slice(0,16);save();updateDiamondUI&&updateDiamondUI();toast('✅ Đổi tên xong!');}
 };
+// ══ PHONE UI SYSTEM ══════════════════════════════════════════════
+let _phoneOpen=false;
+const PHONE_APPS=[
+  {id:'skin',    icon:'🎨',nm:'Chỉnh Skin'},
+  {id:'shopSkin',icon:'🛍️',nm:'Shop Skin'},
+  {id:'friends', icon:'👥',nm:'Bạn Bè'},
+  {id:'upgrade', icon:'⚡',nm:'Nâng Cấp'},
+  {id:'teleport',icon:'🗺️',nm:'Bản Đồ'},
+  {id:'rank',    icon:'🏆',nm:'Cấp Bậc'},
+  {id:'profile', icon:'👤',nm:'Hồ Sơ'},
+  {id:'settings2',icon:'⚙️',nm:'Cài Đặt'},
+];
+function togglePhone(){
+  _phoneOpen=!_phoneOpen;
+  const p=document.getElementById('phonePanel');
+  if(!p)return;
+  p.style.display=_phoneOpen?'block':'none';
+  if(_phoneOpen){buildPhoneGrid();updatePhoneClock();}
+}
+function updatePhoneClock(){
+  const el=document.getElementById('phoneClock');
+  const de=document.getElementById('phoneDate');
+  if(!el)return;
+  const now=new Date();
+  el.textContent=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  if(de)de.textContent=['CN','T2','T3','T4','T5','T6','T7'][now.getDay()]+', '+now.getDate()+'/'+( now.getMonth()+1);
+}
+setInterval(updatePhoneClock,10000);
+function buildPhoneGrid(){
+  const grid=document.getElementById('phoneAppGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  PHONE_APPS.forEach(app=>{
+    const btn=document.createElement('div');
+    btn.style.cssText='display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:rgba(255,255,255,.05);border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.08)';
+    btn.innerHTML='<div style="font-size:22px">'+app.icon+'</div><div style="font-size:8px;color:#aaa;text-align:center">'+app.nm+'</div>';
+    btn.onclick=()=>openPhoneApp(app.id);
+    grid.appendChild(btn);
+  });
+  document.getElementById('phoneAppContent').style.display='none';
+}
+function openPhoneApp(id){
+  const content=document.getElementById('phoneAppContent');
+  if(!content)return;
+  content.style.display='block';
+  const day=new Date().getDay();
+  const isWeekend=(day===0||day===6);
+  if(id==='skin'){
+    // App chỉnh skin
+    const SKINS_OWN=(GS.owned||[]).filter(o=>['cam','trang','den','hong','vang','xanh','tim','bac','rainbow_c','tet_do','long','may_man'].includes(o));
+    let h='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">🎨 Chỉnh Skin</div>';
+    h+='<div style="font-size:10px;color:#aaa;margin-bottom:6px">Skin hiện tại: <b style="color:#FFD700">'+GS.skin+'</b></div>';
+    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">';
+    SKINS_OWN.forEach(s=>{
+      const cur=GS.skin===s;
+      const _sonclick='_setSkin('+JSON.stringify(s)+')';
+      h+='<div onclick="'+_sonclick+'" style="padding:4px;background:'+(cur?'rgba(255,215,0,.2)':'rgba(255,255,255,.05)')+';border:1px solid '+(cur?'#FFD700':'rgba(255,255,255,.1)')+';border-radius:6px;text-align:center;cursor:pointer;font-size:10px;color:'+(cur?'#FFD700':'#aaa')+'">'+s+'</div>';
+    });
+    h+='</div>';
+    // Hat
+    h+='<div style="font-size:10px;color:#aaa;margin-bottom:4px">Mũ: <b style="color:#FFD700">'+(GS.equippedHat||'Không')+'</b></div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px">';
+    const HATS_OWN=(GS.owned||[]).filter(o=>['mu_noel','mu_magic','non_la','hat_sprout','mu_coi','skin_vn','mu_30_4'].includes(o));
+    HATS_OWN.forEach(h2=>{const _hoc='_setHat('+JSON.stringify(h2)+')';h+='<div onclick="'+_hoc+'" style="padding:3px 6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;cursor:pointer;font-size:9px;color:#aaa">'+h2+'</div>';});
+    h+='<div onclick="_setHat(null)" style="padding:3px 6px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.2);border-radius:5px;cursor:pointer;font-size:9px;color:#ff8888">Tháo mũ</div></div>';
+    // Eye color  
+    h+='<div style="font-size:10px;color:#aaa;margin-bottom:4px">Màu mắt: <b style="color:#FFD700">'+(GS.eyeColor||'mặc định')+'</b></div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:3px">';
+    if(typeof EYE_COLORS!=='undefined')(GS.ownedEyeColors||[{id:'#3a8ee0'}]).forEach(ec=>{const id=typeof ec==='string'?ec:ec.id||ec;const _eoc='_setEye('+JSON.stringify(id)+')';h+='<div onclick="'+_eoc+'" style="width:22px;height:22px;border-radius:50%;background:'+id+';border:2px solid '+(GS.eyeColor===id?'#FFD700':'rgba(255,255,255,.2)')+';cursor:pointer"></div>';});
+    h+='</div>';
+    content.innerHTML=h;
+  } else if(id==='shopSkin'){
+    content.innerHTML='';
+    const day2=new Date().getDay();const isWE=(day2===0||day2===6);
+    // Tabs: Skin | Mũ | Màu Mắt
+    const tabBar=document.createElement('div');tabBar.style.cssText='display:flex;gap:5px;margin-bottom:10px';
+    ['Skin','Mũ','Màu Mắt'].forEach(function(t,ti){
+      const tb=document.createElement('button');tb.textContent=t;
+      tb.style.cssText='flex:1;padding:5px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#ccc;font-size:10px;cursor:pointer';
+      tb.onclick=function(){_phoneShopTab(ti);};
+      tabBar.appendChild(tb);
+    });
+    content.appendChild(tabBar);
+    const shopContent=document.createElement('div');shopContent.id='_phoneShopContent';
+    content.appendChild(shopContent);
+    window._phoneShopTab=function(tab){
+      const sc=document.getElementById('_phoneShopContent');if(!sc)return;sc.innerHTML='';
+      if(tab===0){
+        // All skins
+        const ALL_SKINS=[
+          {id:'cam',nm:'Cam Tabby',price:0,weekend:false},
+          {id:'trang',nm:'Bông Tuyết',price:80000,weekend:false},
+          {id:'den',nm:'Hắc Lang',price:100000,weekend:false},
+          {id:'muop',nm:'Mướp Xưa',price:150000,weekend:false},
+          {id:'hong',nm:'Mèo Hồng',price:200000,weekend:false},
+          {id:'nhat',nm:'Nhật Dương',price:180000,weekend:false},
+          {id:'tim',nm:'Tím Mộng',price:220000,weekend:false},
+          {id:'truc',nm:'Gấu Trúc',price:280000,weekend:false},
+          {id:'vang',nm:'Hoàng Kim',price:350000,weekend:false},
+          {id:'bac',nm:'Bạch Kim',price:800000,weekend:true},
+          {id:'rainbow_c',nm:'Cầu Vồng',price:500000,weekend:true},
+          {id:'tet_do',nm:'Tết Đỏ',price:700000,weekend:true},
+          {id:'long',nm:'Rồng Vàng★',price:0,diamond:5,weekend:true},
+        ];
+        const g=document.createElement('div');g.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:5px';
+        ALL_SKINS.forEach(function(sk){
+          if(sk.weekend&&!isWE)return;
+          const owned=(GS.owned||[]).includes(sk.id)||(sk.price===0&&!sk.diamond);
+          const cur=GS.skin===sk.id;
+          const card=document.createElement('div');card.style.cssText='padding:6px;background:rgba(255,255,255,'+(cur?'.12':'.05')+');border:1.5px solid '+(cur?'#FFD700':owned?'#44ff88':'rgba(255,255,255,.1)')+';border-radius:8px;text-align:center';
+          const priceStr=sk.diamond?sk.diamond+'💎':sk.price===0?'Miễn phí':fmt(sk.price)+'đ';
+          card.innerHTML='<div style="font-size:10px;font-weight:700;color:#fff">'+sk.nm+'</div><div style="font-size:9px;color:#FFD700">'+priceStr+'</div>';
+          if(cur){const d=document.createElement('div');d.style.cssText='font-size:9px;color:#FFD700;margin-top:2px';d.textContent='✓ Đang dùng';card.appendChild(d);}
+          else if(owned){const b=document.createElement('button');b.style.cssText='width:100%;padding:2px;background:#226622;border:none;border-radius:4px;color:#fff;font-size:9px;cursor:pointer;margin-top:2px';b.textContent='Dùng';b.onclick=function(){GS.skin=sk.id;save&&save();toast('🎨 Skin: '+sk.nm);_phoneShopTab(0);};card.appendChild(b);}
+          else{const b=document.createElement('button');b.style.cssText='width:100%;padding:2px;background:linear-gradient(135deg,#cc6600,#ff9900);border:none;border-radius:4px;color:#fff;font-size:9px;cursor:pointer;margin-top:2px';b.textContent='Mua';b.onclick=function(){if(sk.diamond){if((GS.diamonds||0)<sk.diamond){toast('💎 Cần '+sk.diamond+'💎!');return;}GS.diamonds-=sk.diamond;updateDiamondUI&&updateDiamondUI();}else{if(GS.money<sk.price){toast('💰 Cần '+fmt(sk.price)+'đ!');return;}GS.money-=sk.price;updateMoneyUI&&updateMoneyUI();}if(!GS.owned)GS.owned=[];GS.owned.push(sk.id);GS.skin=sk.id;save&&save();toast('✅ Skin: '+sk.nm+'!');_phoneShopTab(0);};card.appendChild(b);}
+          g.appendChild(card);
+        });
+        if(!isWE){const wn=document.createElement('div');wn.style.cssText='font-size:9px;color:#ff8888;text-align:center;margin-top:6px';wn.textContent='⭐ Skin đặc biệt chỉ bán T7-CN';sc.appendChild(wn);}
+        sc.appendChild(g);
+      } else if(tab===1){
+        // Hats
+        const ALL_HATS=[
+          {id:'mu_noel',nm:'Mũ Noel 🎅',price:15000,weekend:false},
+          {id:'mu_magic',nm:'Ảo Thuật 🎩',price:25000,weekend:false},
+          {id:'non_la',nm:'Nón Lá 🌾',price:12000,weekend:false},
+          {id:'hat_sprout',nm:'Mũ Mầm 🌱',price:18000,weekend:false},
+          {id:'mu_coi',nm:'Mũ Cối ⛑️',price:100000,weekend:false},
+          {id:'mu_30_4',nm:'Mũ 30/4 🎖️',price:0,vnCost:50,weekend:false},
+        ];
+        const g2=document.createElement('div');g2.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:5px';
+        ALL_HATS.forEach(function(hat){
+          const owned=(GS.owned||[]).includes(hat.id);const cur=GS.equippedHat===hat.id;
+          const card=document.createElement('div');card.style.cssText='padding:6px;background:rgba(255,255,255,'+(cur?'.12':'.05')+');border:1.5px solid '+(cur?'#FFD700':owned?'#44ff88':'rgba(255,255,255,.1)')+';border-radius:8px;text-align:center';
+          const priceStr=hat.vnCost?hat.vnCost+' 🪙':fmt(hat.price)+'đ';
+          card.innerHTML='<div style="font-size:10px;font-weight:700;color:#fff">'+hat.nm+'</div><div style="font-size:9px;color:#FFD700">'+(owned?'':'Giá: ')+priceStr+'</div>';
+          if(cur){const d=document.createElement('div');d.style.cssText='font-size:9px;color:#FFD700;margin-top:2px';d.textContent='✓ Đang đội';card.appendChild(d);}
+          else if(owned){const b=document.createElement('button');b.style.cssText='width:100%;padding:2px;background:#226622;border:none;border-radius:4px;color:#fff;font-size:9px;cursor:pointer;margin-top:2px';b.textContent='Đội';b.onclick=function(){GS.equippedHat=hat.id;save&&save();toast('🎩 '+hat.nm);_phoneShopTab(1);};card.appendChild(b);}
+          else{const b=document.createElement('button');b.style.cssText='width:100%;padding:2px;background:linear-gradient(135deg,#884400,#cc6600);border:none;border-radius:4px;color:#fff;font-size:9px;cursor:pointer;margin-top:2px';b.textContent='Mua';b.onclick=function(){if(hat.vnCost){if((GS.vnTokens||0)<hat.vnCost){toast('🪙 Cần '+hat.vnCost+' token!');return;}GS.vnTokens-=hat.vnCost;}else{if(GS.money<hat.price){toast('💰 Cần '+fmt(hat.price)+'đ!');return;}GS.money-=hat.price;updateMoneyUI&&updateMoneyUI();}if(!GS.owned)GS.owned=[];GS.owned.push(hat.id);GS.equippedHat=hat.id;save&&save();toast('🎩 '+hat.nm+'!');_phoneShopTab(1);};card.appendChild(b);}
+          g2.appendChild(card);
+        });
+        sc.appendChild(g2);
+      } else if(tab===2){
+        // Eye colors
+        if(typeof EYE_COLORS==='undefined'){sc.innerHTML='<div style="color:#aaa">Đang tải...</div>';return;}
+        const g3=document.createElement('div');g3.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:6px';
+        EYE_COLORS.forEach(function(ec){
+          const owned=ec.price===0||(GS.ownedEyeColors&&GS.ownedEyeColors.includes(ec.id));
+          const cur=GS.eyeColor===ec.id;
+          const card=document.createElement('div');card.style.cssText='padding:6px;background:rgba(255,255,255,'+(cur?'.12':'.05')+');border:1.5px solid '+(cur?'#FFD700':'rgba(255,255,255,.1)')+';border-radius:8px;text-align:center;cursor:pointer';
+          const eyeStyle=ec.id==='rainbow'?'background:linear-gradient(135deg,#f00,#ff0,#0f0,#0ff,#00f)':'background:'+ec.id;
+          card.innerHTML='<div style="width:22px;height:22px;border-radius:50%;'+eyeStyle+';margin:0 auto 3px;border:2px solid rgba(255,255,255,.3)"></div><div style="font-size:8px;color:'+(cur?'#FFD700':owned?'#44ff88':'#aaa')+'">'+(ec.nm||'').slice(0,6)+'</div>'+(owned?'':'<div style="font-size:7px;color:#888">'+fmt(ec.price)+'đ</div>');
+          card.onclick=function(){if(owned){GS.eyeColor=ec.id;save&&save();toast('👁️ Màu mắt!');_phoneShopTab(2);}else{if(GS.money<ec.price){toast('💰 Cần '+fmt(ec.price)+'đ!');return;}GS.money-=ec.price;updateMoneyUI&&updateMoneyUI();if(!GS.ownedEyeColors)GS.ownedEyeColors=[];GS.ownedEyeColors.push(ec.id);GS.eyeColor=ec.id;save&&save();toast('👁️ Đổi màu mắt!');_phoneShopTab(2);}};
+          g3.appendChild(card);
+        });
+        sc.appendChild(g3);
+      }
+    };
+    window._phoneShopTab(0);
+    } else if(id==='friends'){
+    let h='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">👥 Bạn Bè</div>';
+    h+='<div style="display:flex;gap:5px;margin-bottom:8px"><input id="friendSearch" placeholder="Tìm tên..." style="flex:1;padding:4px 6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:11px"><button onclick="_searchFriend()" style="padding:4px 8px;background:rgba(100,150,255,.3);border:1px solid rgba(100,150,255,.4);border-radius:6px;color:#fff;font-size:10px;cursor:pointer">Tìm</button></div>';
+    h+='<div id="friendSearchResult" style="margin-bottom:8px;font-size:10px;color:#aaa"></div>';
+    h+='<div style="font-size:10px;color:#aaa;margin-bottom:4px">Bạn bè ('+((GS.friends||[]).length)+'):</div><div style="display:flex;flex-direction:column;gap:4px">';
+    (GS.friends||[]).forEach(f=>{
+      h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 6px;background:rgba(255,255,255,.05);border-radius:6px">'
+        +'<span style="font-size:11px;color:#44ff88">💚 '+f.name+'</span>'
+        +'<button onclick="'+('_unfriend('+JSON.stringify(f.id)+')')+'" style="padding:2px 6px;background:rgba(255,0,0,.2);border:1px solid rgba(255,0,0,.3);border-radius:4px;color:#ff8888;font-size:9px;cursor:pointer">Huỷ</button>'
+        +'</div>';
+    });
+    if(!(GS.friends||[]).length)h+='<div style="font-size:10px;color:#666">Chưa có bạn bè</div>';
+    h+='</div>';
+    content.innerHTML=h;
+  } else if(id==='upgrade'){
+    let h='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">⚡ Nâng Cấp</div>';
+    const upgs=[
+      {id:'spdLvl',nm:'🏃 Tốc Độ',desc:'Chạy nhanh hơn',max:5,price:50000},
+      {id:'lckLvl',nm:'🍀 May Mắn',desc:'+10% tiền kho báu/lần',max:3,price:80000},
+      {id:'radLvl',nm:'📡 Tầm nhìn',desc:'Phát hiện kho báu xa hơn',max:3,price:60000},
+      {id:'fishLvl',nm:'🎣 Câu Cá',desc:'Câu cá nhanh hơn',max:3,price:70000},
+    ];
+    upgs.forEach(u=>{
+      const cur=GS[u.id]||0;const done=cur>=u.max;
+      const cost=u.price*(cur+1);
+      h+='<div style="padding:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;margin-bottom:5px">'
+        +'<div style="display:flex;justify-content:space-between"><span style="font-size:11px;font-weight:700;color:#fff">'+u.nm+'</span><span style="font-size:10px;color:#88ff88">Lv'+cur+'/'+u.max+'</span></div>'
+        +'<div style="font-size:9px;color:#aaa;margin:2px 0">'+u.desc+'</div>'
+        +'<div style="display:flex;gap:5px;height:4px;margin:3px 0">';
+      for(let s=0;s<u.max;s++)h+='<div style="flex:1;height:4px;background:'+(s<cur?'#44ff88':'rgba(255,255,255,.15)')+';border-radius:2px"></div>';
+      h+='</div>'
+        +(done?'<div style="font-size:9px;color:#44ff88;text-align:center">✓ Tối đa</div>'
+              :'<button onclick="'+('_upgrade('+JSON.stringify(u.id)+','+cost+')')+'" style="width:100%;padding:4px;background:linear-gradient(135deg,#224488,#4466cc);border:none;border-radius:5px;color:#fff;font-size:10px;cursor:pointer">Nâng cấp '+fmt(cost)+'đ</button>')
+        +'</div>';
+    });
+    content.innerHTML=h;
+  } else if(id==='teleport'){
+    let h='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">🗺️ Bản Đồ Dịch Chuyển</div>';
+    const spots=[
+      {nm:'🏠 Làng',x:57*52,y:44*52,cost:0},
+      {nm:'🌸 Rừng Đào',x:42*52,y:65*52,cost:0},
+      {nm:'🏫 Trường Học',x:82*52,y:72*52,cost:20,diamond:true},
+      {nm:'🏛️ Dinh Độc Lập',x:55*52,y:22*52,cost:20,diamond:true},
+      {nm:'⛽ Trạm Xăng',x:75*52,y:35*52,cost:0},
+      {nm:'🏃 Parkour',fn:'openParkour',cost:30,diamond:true},
+    ];
+    const tpFrag=document.createDocumentFragment();
+    spots.forEach(function(s){
+      const owned=!s.cost||(GS.unlockedTp&&GS.unlockedTp.includes(s.nm));
+      const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;margin-bottom:4px';
+      const lbl=document.createElement('span');lbl.style.cssText='font-size:11px;color:#fff';lbl.textContent=s.nm;row.appendChild(lbl);
+      const btn=document.createElement('button');
+      if(owned||!s.cost){btn.style.cssText='padding:3px 8px;background:linear-gradient(135deg,#224488,#4466cc);border:none;border-radius:5px;color:#fff;font-size:9px;cursor:pointer';btn.textContent='Đi';btn.onclick=function(){_teleportTo(s);};}
+      else{btn.style.cssText='padding:3px 8px;background:rgba(100,50,200,.4);border:1px solid rgba(150,100,255,.3);border-radius:5px;color:#aaa;font-size:9px;cursor:pointer';btn.textContent='Mở khoá '+s.cost+(s.diamond?'💎':'k');btn.onclick=function(){_unlockTp(s);};}
+      row.appendChild(btn);tpFrag.appendChild(row);
+    });
+    content.innerHTML='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">🗺️ Bản Đồ Dịch Chuyển</div>';
+    content.appendChild(tpFrag);
+  } else if(id==='rank'){
+    if(!GS.xp)GS.xp=0;if(!GS.level)GS.level=1;
+    const xpNeeded=GS.level*100;
+    const pct=Math.min(100,Math.round(GS.xp/xpNeeded*100));
+    let h='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">🏆 Cấp Bậc & Nhiệm Vụ</div>';
+    h+='<div style="background:rgba(255,255,255,.05);border-radius:8px;padding:8px;margin-bottom:10px">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:700;color:#FFD700">Lv'+GS.level+'</span><span style="font-size:10px;color:#aaa">'+GS.xp+'/'+xpNeeded+' XP</span></div>'
+      +'<div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px"><div style="height:6px;background:linear-gradient(90deg,#FFD700,#ff8800);border-radius:3px;width:'+pct+'%"></div></div>'
+      +'</div>';
+    const missions=[
+      {nm:'Thu thập 3 kho báu',id:'m1',reward:{xp:30,money:50000},check:()=>true},
+      {nm:'Câu 5 con cá',id:'m2',reward:{xp:20,money:30000},check:()=>true},
+      {nm:'Đi bộ 100 bước',id:'m3',reward:{xp:15,diamond:1},check:()=>true},
+      {nm:'Nói chuyện NPC',id:'m4',reward:{xp:25,money:20000},check:()=>true},
+    ];
+    h+='<div style="font-size:10px;color:#aaa;margin-bottom:5px">Nhiệm vụ tuần (reset T2 hàng tuần):</div>';
+    if(!GS.weekMissions)GS.weekMissions={};
+    missions.forEach(m=>{
+      const done=GS.weekMissions[m.id];
+      const rStr=m.reward.money?'+'+fmt(m.reward.money)+'đ':m.reward.diamond?'+'+m.reward.diamond+'💎':'';
+      h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 7px;background:rgba(255,255,255,.05);border-radius:7px;margin-bottom:3px">'
+        +'<div><div style="font-size:10px;color:'+(done?'#44ff88':'#fff')+'">'+m.nm+'</div><div style="font-size:9px;color:#888">+'+m.reward.xp+' XP '+rStr+'</div></div>'
+        +(done?'<span style="color:#44ff88;font-size:14px">✓</span>'
+              :'<button onclick="'+('_doMission('+JSON.stringify(m.id)+','+JSON.stringify(m.reward)+')')+'" style="padding:3px 7px;background:linear-gradient(135deg,#884400,#cc6600);border:none;border-radius:5px;color:#fff;font-size:9px;cursor:pointer">Nhận</button>')
+        +'</div>';
+    });
+    content.innerHTML=h;
+  } else if(id==='profile'){
+    const AVATARS=[
+      {id:'default',nm:'Mặc định',icon:'🐱'},
+      {id:'lixi_cat',nm:'Lì Xì Cat',icon:'🧧'},
+      {id:'diamond_av',nm:'Kim Cương',req:100,icon:'💎'},
+      {id:'rich_av',nm:'Đại Gia',req10m:true,icon:'💰'},
+    ];
+    content.innerHTML='';
+    const header=document.createElement('div');header.style.cssText='font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px';header.textContent='👤 Hồ Sơ';content.appendChild(header);
+    const profCard=document.createElement('div');profCard.style.cssText='text-align:center;margin-bottom:10px;padding:8px;background:rgba(255,255,255,.05);border-radius:10px';
+    const avIcon=GS.avatar==='lixi_cat'?'🧧':GS.avatar==='diamond_av'?'💎':GS.avatar==='rich_av'?'💰':'🐱';
+    profCard.innerHTML='<div style="font-size:40px">'+avIcon+'</div><div style="font-size:14px;font-weight:700;color:#FFD700">'+GS.playerName+'</div><div style="font-size:10px;color:#aaa">Lv'+(GS.level||1)+' • ❤️ '+(GS.heartsReceived||0)+' • 💰 '+fmt(GS.money)+'</div>';
+    content.appendChild(profCard);
+    const avLabel=document.createElement('div');avLabel.style.cssText='font-size:10px;color:#aaa;margin-bottom:5px';avLabel.textContent='Chọn Avatar:';content.appendChild(avLabel);
+    const avGrid=document.createElement('div');avGrid.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:5px';
+    AVATARS.forEach(function(av){
+      const locked=(av.req&&(GS.diamonds||0)<av.req)||(av.req10m&&GS.money<10000000);
+      const sel=(GS.avatar||'default')===av.id;
+      const avBtn=document.createElement('div');
+      avBtn.style.cssText='padding:5px;background:rgba(255,255,255,'+(sel?'.15':'.05')+');border:1px solid '+(sel?'#FFD700':'rgba(255,255,255,.1)')+';border-radius:8px;text-align:center;cursor:pointer;opacity:'+(locked?'.5':'1');
+      avBtn.innerHTML='<div style="font-size:18px">'+av.icon+'</div><div style="font-size:7px;color:#aaa">'+av.nm+'</div>'+(locked?'<div style="font-size:7px;color:#ff8888">'+(av.req?av.req+'💎':'10M đ')+'</div>':'');
+      avBtn.onclick=locked?function(){toast('Chưa mở khoá!');}:function(){_setAvatar(av.id);};
+      avGrid.appendChild(avBtn);
+    });
+    content.appendChild(avGrid);
+    } else if(id==='settings2'){
+    let h='<div style="font-size:12px;font-weight:700;color:#FFD700;margin-bottom:8px">⚙️ Cài Đặt & Chat</div>';
+    h+='<div style="display:flex;flex-direction:column;gap:6px">';
+    h+='<div style="font-size:10px;color:#aaa;margin-bottom:2px">💬 Chat</div>';
+    h+='<div id="_phoneClog" style="height:100px;overflow-y:auto;background:rgba(255,255,255,.05);border-radius:8px;padding:5px;font-size:9px;color:#ccc;margin-bottom:5px">Đang tải chat...</div>';
+    h+='<div style="display:flex;gap:5px"><input id="_phoneChat" placeholder="Nhắn tin..." style="flex:1;padding:5px 8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:10px"><button id="_phoneSend" style="padding:5px 8px;background:rgba(100,150,255,.3);border:1px solid rgba(100,150,255,.4);border-radius:6px;color:#fff;font-size:10px;cursor:pointer">Gửi</button></div>';
+    h+='<hr style="border:none;border-top:1px solid rgba(255,255,255,.1);margin:6px 0">';
+    h+='<button onclick="_changeNamePhone()" style="padding:8px;background:rgba(100,100,255,.2);border:1px solid rgba(100,100,255,.3);border-radius:8px;color:#fff;font-size:11px;cursor:pointer">✏️ Đổi Tên (10💎)</button>';
+    h+='<button onclick="_changePassPhone()" style="padding:8px;background:rgba(100,200,100,.2);border:1px solid rgba(100,200,100,.3);border-radius:8px;color:#fff;font-size:11px;cursor:pointer">🔑 Đổi Mật Khẩu</button>';
+    h+='<button onclick="_logoutPhone()" style="padding:8px;background:rgba(255,50,50,.2);border:1px solid rgba(255,50,50,.3);border-radius:8px;color:#ff8888;font-size:11px;cursor:pointer">🚪 Đăng Xuất</button>';
+    h+='</div>';
+    content.innerHTML=h;
+  }
+}
+// Phone app helper functions
+window._setSkin=s=>{GS.skin=s;save&&save();toast('🎨 Skin: '+s);openPhoneApp('skin');};
+window._setHat=h=>{GS.equippedHat=h;save&&save();toast(h?'🎩 Mũ: '+h:'🎩 Tháo mũ');openPhoneApp('skin');};
+window._setEye=e=>{GS.eyeColor=e;save&&save();toast('👁️ Màu mắt đổi!');openPhoneApp('skin');};
+// Phone chat wiring
+function _wirePhoneChat(){
+  const clog=document.getElementById('_phoneClog');
+  const mainClog=document.getElementById('clog');
+  if(clog&&mainClog)clog.innerHTML=mainClog.innerHTML;
+  const sendBtn=document.getElementById('_phoneSend');
+  const inp=document.getElementById('_phoneChat');
+  if(sendBtn&&inp){sendBtn.onclick=function(){const txt=inp.value.trim();if(!txt)return;inp.value='';sendChat&&sendChat(txt);};inp.onkeydown=function(e){if(e.key==='Enter'){const txt=inp.value.trim();if(!txt)return;inp.value='';sendChat&&sendChat(txt);}};}
+}
+window._setAvatar=a=>{GS.avatar=a;save&&save();toast('👤 Avatar!');openPhoneApp('profile');};
+window._buySkin=(id,price)=>{if(GS.money<price){toast('💰 Cần '+fmt(price)+'đ!');return;}GS.money-=price;if(!GS.owned)GS.owned=[];GS.owned.push(id);GS.skin=id;updateMoneyUI&&updateMoneyUI();save&&save();toast('✅ Mua skin '+id+'!');openPhoneApp('shopSkin');};
+window._upgrade=(id,cost)=>{if(GS.money<cost){toast('💰 Cần '+fmt(cost)+'đ!');return;}GS.money-=cost;GS[id]=(GS[id]||0)+1;updateMoneyUI&&updateMoneyUI();save&&save();toast('⚡ Nâng cấp!');openPhoneApp('upgrade');};
+window._teleportTo=s=>{if(s.fn){window[s.fn]&&window[s.fn]();}else{cat.x=s.x;cat.y=s.y;toast('🗺️ Dịch chuyển: '+s.nm);}document.getElementById('phonePanel').style.display='none';_phoneOpen=false;};
+window._unlockTp=s=>{if(s.diamond){if((GS.diamonds||0)<s.cost){toast('💎 Cần '+s.cost+'💎!');return;}GS.diamonds-=s.cost;updateDiamondUI&&updateDiamondUI();}else{if(GS.money<s.cost*1000){toast('💰 Cần '+s.cost+'k!');return;}GS.money-=s.cost*1000;updateMoneyUI&&updateMoneyUI();}if(!GS.unlockedTp)GS.unlockedTp=[];GS.unlockedTp.push(s.nm);save&&save();toast('🔓 Mở khoá: '+s.nm+'!');openPhoneApp('teleport');};
+window._doMission=(id,reward)=>{if(!GS.weekMissions)GS.weekMissions={};GS.weekMissions[id]=true;if(reward.money){GS.money+=reward.money;updateMoneyUI&&updateMoneyUI();}if(reward.diamond){GS.diamonds=(GS.diamonds||0)+reward.diamond;updateDiamondUI&&updateDiamondUI();}GS.xp=(GS.xp||0)+reward.xp;const xpNeed=GS.level*100;if(GS.xp>=xpNeed){GS.xp-=xpNeed;GS.level=(GS.level||1)+1;toast('🎉 Lên cấp '+GS.level+'!',4000);}save&&save();toast('✅ Hoàn thành nhiệm vụ!');openPhoneApp('rank');};
+window._searchFriend=function(){
+  const nm=(document.getElementById('friendSearch')||{}).value||'';
+  const op=onlinePlayers.find(function(p){return p&&(p.name||'').toLowerCase()===nm.toLowerCase();});
+  const res=document.getElementById('friendSearchResult');if(!res)return;
+  if(op){
+    const wrap=document.createElement('div');wrap.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:4px 6px;background:rgba(0,200,0,.1);border-radius:6px';
+    const sp=document.createElement('span');sp.style.color='#44ff88';sp.textContent='✅ '+op.name;wrap.appendChild(sp);
+    const btn=document.createElement('button');btn.style.cssText='padding:2px 6px;background:rgba(0,200,0,.2);border:1px solid rgba(0,200,0,.3);border-radius:4px;color:#44ff88;font-size:9px;cursor:pointer';btn.textContent='Kết bạn';
+    const _opId=op.id,_opName=op.name;
+    btn.onclick=function(){sendFriendRequest(_opId,_opName);};wrap.appendChild(btn);
+    res.innerHTML='';res.appendChild(wrap);
+  }else{res.innerHTML='<div style="color:#ff8888;font-size:10px">Không tìm thấy người chơi đang online</div>';}
+};
+window._unfriend=id=>{GS.friends=(GS.friends||[]).filter(f=>f.id!==id);save&&save();openPhoneApp('friends');};
+window._changeNamePhone=()=>{if((GS.diamonds||0)<10){toast('💎 Cần 10💎!');return;}const nn=prompt('Tên mới:',GS.playerName);if(nn&&nn.trim()){GS.diamonds-=10;GS.playerName=nn.trim().slice(0,16);updateDiamondUI&&updateDiamondUI();save&&save();toast('✅ Đổi tên (-10💎)');openPhoneApp('settings2');}};
+window._changePassPhone=()=>{const np=prompt('Mật khẩu mới (5+ ký tự, chữ và số):');if(!np||np.length<5||!/[a-zA-Z]/.test(np)||!/[0-9]/.test(np)){toast('❌ Mật khẩu phải 5+ ký tự, gồm chữ và số!');return;}GS.password=np;save&&save();toast('🔑 Đổi mật khẩu thành công!');};
+window._logoutPhone=()=>{if(confirm('Đăng xuất?')){localStorage.removeItem('mlx21_acc');location.reload();}};
+function sendFriendRequest(toId,toName){pnPublish&&pnPublish({type:'friend_req',from:MY_ID,name:GS.playerName,to:toId});toast('💌 Đã gửi lời mời kết bạn tới '+toName+'!');}
+function updateProfilePanel(){
+  const nm=document.getElementById('profileName');const lv=document.getElementById('profileLv');const av=document.getElementById('profileAvatar');
+  if(nm)nm.textContent=GS.playerName||'Mèo';
+  if(lv)lv.textContent=GS.level||1;
+  if(av)av.textContent=GS.avatar==='lixi_cat'?'🧧':GS.avatar==='diamond_av'?'💎':GS.avatar==='rich_av'?'💰':'🐱';
+}
+function toggleProfilePanel(){
+  openPhoneApp&&openPhoneApp('profile');togglePhone&&(document.getElementById('phonePanel').style.display='block',_phoneOpen=true,buildPhoneGrid&&buildPhoneGrid(),openPhoneApp&&openPhoneApp('profile'));
+}
 function rebuildHotbarFromItems(){
   // Restore held item icons from GS.items into hotbar
   // Called on load - place commonly used items back
@@ -7478,7 +7882,9 @@ function initGame(){
         if(_intNearNpc==='changing_room'){document.getElementById('shopOv').classList.add('on');toast('👗 Phòng thay đồ! Chọn skin bạn thích');return;}
         return;
       }
-      if(insideHouse&&insideHouse.isSchool){
+      if(insideHouse&&insideHouse.id==='dinh_doc_lap'){
+      if(typeof drawDinhInterior==='function')drawDinhInterior(ctx,vw,vh,wt);
+    } else if(insideHouse&&insideHouse.isSchool){
         if(_intNearNpc==='exit'){exitHouse();return;}
         if(_intNearNpc==='teacher'){startMathQuiz();return;}
         if(_intNearNpc==='cooking'){startCookingClass();return;}
@@ -8360,6 +8766,105 @@ function closeShopInt(){
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('plantNameInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')confirmPlantName()});
 });
+
+// ══ LOGIN / REGISTER ══════════════════════════════════════════
+function switchLoginTab(tab){
+  const fL=document.getElementById('formLogin');
+  const fR=document.getElementById('formRegister');
+  const tL=document.getElementById('tabLogin');
+  const tR=document.getElementById('tabRegister');
+  if(fL)fL.style.display=tab==='login'?'':'none';
+  if(fR)fR.style.display=tab==='register'?'':'none';
+  if(tL){tL.style.background=tab==='login'?'rgba(255,180,0,.2)':'rgba(255,255,255,.05)';tL.style.color=tab==='login'?'#FFD700':'#aaa';}
+  if(tR){tR.style.background=tab==='register'?'rgba(100,150,255,.2)':'rgba(255,255,255,.05)';tR.style.color=tab==='register'?'#88aaff':'#aaa';}
+}
+function _getAccounts(){try{return JSON.parse(localStorage.getItem('mlx21_accounts')||'{}');}catch(e){return {};}}
+function _saveAccounts(accs){localStorage.setItem('mlx21_accounts',JSON.stringify(accs));}
+function doLogin(){
+  const nm=(document.getElementById('loginName')||{}).value||'';
+  const pw=(document.getElementById('loginPass')||{}).value||'';
+  const name=nm.trim();
+  if(!name){alert('Nhập tên đăng nhập!');return;}
+  const accs=_getAccounts();
+  if(!accs[name]){
+    // New guest - create account automatically
+    accs[name]={pass:pw||'',created:Date.now()};
+    _saveAccounts(accs);
+  } else if(accs[name].pass&&pw!==accs[name].pass){
+    alert('❌ Sai mật khẩu!');return;
+  }
+  _startGame(name,accs[name]);
+}
+function doRegister(){
+  const nm=((document.getElementById('regName')||{}).value||'').trim();
+  const pw=(document.getElementById('regPass')||{}).value||'';
+  const pw2=(document.getElementById('regPass2')||{}).value||'';
+  const err=document.getElementById('regErr');
+  if(nm.length<3||nm.length>16){if(err)err.textContent='Tên phải 3-16 ký tự!';return;}
+  if(pw.length<5){if(err)err.textContent='Mật khẩu phải 5+ ký tự!';return;}
+  if(!/[a-zA-Z]/.test(pw)||!/[0-9]/.test(pw)){if(err)err.textContent='Mật khẩu phải có chữ và số!';return;}
+  if(pw!==pw2){if(err)err.textContent='Mật khẩu không khớp!';return;}
+  const accs=_getAccounts();
+  if(accs[nm]){if(err)err.textContent='❌ Tên này đã có người dùng!';return;}
+  accs[nm]={pass:pw,created:Date.now()};_saveAccounts(accs);
+  if(err){err.style.color='#44ff88';err.textContent='✅ Tạo thành công!';}
+  setTimeout(()=>_startGame(nm,accs[nm]),600);
+}
+function doForgotPass(){
+  const nm=((document.getElementById('loginName')||{}).value||'').trim();
+  if(!nm){alert('Nhập tên trước!');return;}
+  const accs=_getAccounts();
+  if(!accs[nm]){alert('Tài khoản không tồn tại!');return;}
+  if(localStorage.getItem('mlx21_dev_'+nm)){
+    const np=prompt('Mật khẩu mới (5+ ký tự, chữ + số):');
+    if(!np||np.length<5||!/[a-zA-Z]/.test(np)||!/[0-9]/.test(np)){alert('Mật khẩu không hợp lệ!');return;}
+    accs[nm].pass=np;_saveAccounts(accs);alert('✅ Đổi mật khẩu thành công!');
+  } else {alert('Máy này chưa từng đăng nhập tài khoản này!');}
+}
+function _startGame(nm,accData){
+  localStorage.setItem('mlx21_dev_'+nm,'1');
+  localStorage.setItem('mlx21_session',JSON.stringify({name:nm}));
+  // Load save if exists
+  const saved=localStorage.getItem('mlx21_save_'+nm)||localStorage.getItem('mlx21');
+  if(saved){try{const d=JSON.parse(saved);
+    if(d.money)GS.money=d.money;if(d.owned)GS.owned=d.owned;
+    if(d.skin)GS.skin=d.skin;if(d.diamonds)GS.diamonds=d.diamonds;
+    if(d.level)GS.level=d.level;if(d.xp)GS.xp=d.xp;
+    if(d.friends)GS.friends=d.friends;
+  }catch(e){}}
+  GS.playerName=nm;
+  const menu=document.getElementById('loginMenu');
+  if(menu)menu.style.display='none';
+  if(typeof initGame==='function')initGame();
+  else console.error('initGame not defined');
+}
+// Auto-login check on page load
+(function(){
+  try{
+    const sess=localStorage.getItem('mlx21_session');
+    if(!sess)return;
+    const sd=JSON.parse(sess);
+    if(!sd||!sd.name)return;
+    const menu=document.getElementById('loginMenu');
+    if(!menu)return;
+    // Build returning player UI with DOM (no inline onclick)
+    menu.innerHTML='';
+    const outer=document.createElement('div');outer.style.cssText='display:flex;align-items:center;justify-content:center;height:100%';
+    const box=document.createElement('div');box.style.cssText='background:linear-gradient(135deg,#1a0a2e,#0a0a1a);border:2px solid rgba(255,180,0,.4);border-radius:20px;padding:24px;max-width:320px;width:92%;text-align:center';
+    box.innerHTML='<div style="font-size:48px;margin-bottom:8px">🐱</div><div style="font-size:18px;font-weight:700;color:#FFD700;margin-bottom:4px">Chào mừng trở lại!</div><div style="font-size:14px;color:#aaa;margin-bottom:16px">'+sd.name+'</div>';
+    const btn1=document.createElement('button');btn1.style.cssText='width:100%;padding:12px;background:linear-gradient(135deg,#884400,#cc6600);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px';
+    btn1.textContent='🎮 Bắt Đầu Phiêu Lưu';
+    const _savedName=sd.name;
+    btn1.onclick=function(){_startGame(_savedName,null);};
+    box.appendChild(btn1);
+    const btn2=document.createElement('button');btn2.style.cssText='width:100%;padding:8px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#888;font-size:11px;cursor:pointer';
+    btn2.textContent='Đăng nhập tài khoản khác';
+    btn2.onclick=function(){localStorage.removeItem('mlx21_session');location.reload();};
+    box.appendChild(btn2);
+    outer.appendChild(box);menu.appendChild(outer);
+  }catch(e){console.log('Session check err:',e);}
+})();
+function sendWave(){pnPublish&&pnPublish({type:'emo',id:MY_ID,name:GS.playerName,emo:'👋'});currEmo='👋';emoTimer=3;toast('👋');}
 </script>
 
 
@@ -8377,7 +8882,7 @@ x:220;flex-direction:column;align-items:center;gap:7px;
     border-radius:50px;color:#FFD700;font-size:16px;font-weight:900;
     padding:8px 28px;cursor:pointer;transition:transform .12s;
     box-shadow:0 3px 12px rgba(255,0,0,.4)">
-    👆 Nhận Lì Xì!
+    👆 Nhận Kho Báu!
   </button>
 </div>
 
@@ -8426,7 +8931,7 @@ x:220;flex-direction:column;align-items:center;gap:7px;
     </div>
   </div>
 </div>
-<div class="ov" id="mga"><div class="card"><span class="xb" id="mgX">✕</span><h2>🎮 Trò Chơi</h2><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;justify-content:center"><button class="hb" id="mgFlap">🐦 Flappy</button><button class="hb" id="mgHai">🍀 Hái Lộc</button><button class="hb" id="mgBat">🧧 Bắt Lì Xì</button></div><div id="mgSc" style="color:#FFD700;font-size:13px"></div><canvas id="mgc" width="320" height="220"></canvas><div style="display:flex;justify-content:space-between;margin-top:6px"><span id="mgTime" style="color:#FFD700;font-weight:700">30</span><span id="mgT" style="color:#aaa;font-size:12px"></span></div></div></div>
+<div class="ov" id="mga"><div class="card"><span class="xb" id="mgX">✕</span><h2>🎮 Trò Chơi</h2><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;justify-content:center"><button class="hb" id="mgFlap">🐦 Flappy</button><button class="hb" id="mgHai">🍀 Hái Lộc</button><button class="hb" id="mgBat">🧧 Bắt Kho Báu</button></div><div id="mgSc" style="color:#FFD700;font-size:13px"></div><canvas id="mgc" width="320" height="220"></canvas><div style="display:flex;justify-content:space-between;margin-top:6px"><span id="mgTime" style="color:#FFD700;font-weight:700">30</span><span id="mgT" style="color:#aaa;font-size:12px"></span></div></div></div>
 
 <!-- EMOJI PANEL -->
 <div id="emoPnl" style="display:none;position:fixed;bottom:296px;left:8px;z-index:200;
@@ -8464,7 +8969,7 @@ x:220;flex-direction:column;align-items:center;gap:7px;
 
 <div id="updateBoard" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:center;justify-content:center">
   <div style="background:linear-gradient(135deg,#1a0505,#050a1a);border:2px solid #FFD700;border-radius:20px;padding:20px;max-width:420px;width:94%;max-height:85vh;overflow-y:auto;position:relative">
-    <div style="font-size:22px;font-weight:700;color:#FFD700;text-align:center;margin-bottom:12px">🎮 Mèo Hái Lì Xì 2.1 — CẬP NHẬT</div>
+    <div style="font-size:22px;font-weight:700;color:#FFD700;text-align:center;margin-bottom:12px">🎮 Mèo Hái Kho Báu 2.1 — CẬP NHẬT</div>
     <div style="font-size:12px;color:#aaa;text-align:center;margin-bottom:14px">Phiên bản mới nhất</div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
       <div style="background:rgba(255,215,0,.1);border-left:3px solid #FFD700;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#FFD700">🆕 MỚI</strong><br>• Hệ thống đảo: vào nhà/shop → teleport đến đảo riêng
@@ -8487,9 +8992,9 @@ x:220;flex-direction:column;align-items:center;gap:7px;
 • Parkour game trên đảo riêng
 • Quà theo giờ 🎁 (1p/5p/10p/30p/1h)
 • Thời tiết mưa/nắng/sao băng online
-• Hoa đột biến (vàng/kim/ruby/rainbow/sao băng)<br>• Lì xì: click 3-5 lần để mở, pháo hoa chỉ 500k, spawn trong rừng<br>• Thanh đói & buồn ngủ: ảnh hưởng gameplay<br>• Thời tiết: mưa/nắng/sao băng<br>• Quà theo giờ chơi (reset mỗi ngày)<br>• Hệ thống kim cương 💎<br>• Kết bạn & follow hệ thống</div>
-      <div style="background:rgba(100,200,100,.1);border-left:3px solid #44ff88;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#44ff88">🔧 FIX</strong><br>• Vào nhà thấy mèo đúng vị trí<br>• Mua đồ có nút MUA rõ ràng<br>• Pet/xuồng/cánh chỉ mua 1 lần<br>• Lì xì spawn trong rừng<br>• Camera theo mèo khi trên đảo</div>
-      <div style="background:rgba(100,150,255,.1);border-left:3px solid #88aaff;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#88aaff">⚖️ THAY ĐỔI</strong><br>• Lì xì chủ yếu 10k-50k, 500k cực hiếm (0.1%)<br>• Thiếu ngủ hoàn toàn mới không di chuyển được<br>• Đói giảm tốc độ, không ảnh hưởng khác<br>• Kiếm tiền cần cày nhiều hơn</div>
+• Hoa đột biến (vàng/kim/ruby/rainbow/sao băng)<br>• Kho báu: click 3-5 lần để mở, pháo hoa chỉ 500k, spawn trong rừng<br>• Thanh đói & buồn ngủ: ảnh hưởng gameplay<br>• Thời tiết: mưa/nắng/sao băng<br>• Quà theo giờ chơi (reset mỗi ngày)<br>• Hệ thống kim cương 💎<br>• Kết bạn & follow hệ thống</div>
+      <div style="background:rgba(100,200,100,.1);border-left:3px solid #44ff88;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#44ff88">🔧 FIX</strong><br>• Vào nhà thấy mèo đúng vị trí<br>• Mua đồ có nút MUA rõ ràng<br>• Pet/xuồng/cánh chỉ mua 1 lần<br>• Kho báu spawn trong rừng<br>• Camera theo mèo khi trên đảo</div>
+      <div style="background:rgba(100,150,255,.1);border-left:3px solid #88aaff;padding:6px 10px;border-radius:0 6px 6px 0"><strong style="color:#88aaff">⚖️ THAY ĐỔI</strong><br>• Kho báu chủ yếu 10k-50k, 500k cực hiếm (0.1%)<br>• Thiếu ngủ hoàn toàn mới không di chuyển được<br>• Đói giảm tốc độ, không ảnh hưởng khác<br>• Kiếm tiền cần cày nhiều hơn</div>
     </div>
     <button onclick="document.getElementById('updateBoard').style.display='none';localStorage.setItem('ub_seen','1')" style="margin-top:14px;width:100%;padding:10px;background:linear-gradient(135deg,#cc6600,#ff9900);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer">✅ Đã đọc - Chơi thôi!</button>
   </div>
